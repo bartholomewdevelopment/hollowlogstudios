@@ -1,126 +1,155 @@
-/* .admin-panel {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .admin-panel h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .admin-panel table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .admin-panel table th,
-  .admin-panel table td {
-    border: 1px solid #e0e0e0;
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .admin-panel table th {
-    background-color: var(--primary-color);
+/* Import Griffy font */
+@import url('https://fonts.googleapis.com/css2?family=Griffy&display=swap');
+
+/* General styles for the Admin Panel */
+.admin-panel {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: 'Griffy', cursive; /* Apply Griffy font to the whole panel */
+}
+
+/* Panel headings */
+.admin-panel h1, 
+.admin-panel h2 {
+  font-family: 'Griffy', cursive;
+  color: #046c4e;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Form for adding artwork */
+.add-artwork input,
+.add-artwork textarea,
+.add-artwork select {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.add-artwork button {
+  padding: 10px 20px;
+  background-color: #046c4e;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Griffy', cursive;
+}
+
+.add-artwork button:hover {
+  background-color: #035240;
+}
+
+/* Artwork cards container */
+.artworks-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center; /* Center the cards */
+}
+
+/* Individual artwork card */
+.artwork-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  padding: 15px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.artwork-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Card title */
+.artwork-card h3 {
+  font-family: 'Griffy', cursive;
+  font-size: 1.5em;
+  color: #046c4e;
+  margin: 10px 0;
+}
+
+/* Card description */
+.artwork-card p {
+  font-size: 1em;
+  color: #333;
+  margin: 5px 0;
+}
+
+/* Card image */
+.artwork-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+/* Card actions (buttons) */
+.artwork-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.artwork-actions button {
+  background-color: #046c4e;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Griffy', cursive;
+  transition: background-color 0.3s ease;
+}
+
+.artwork-actions button:hover {
+  background-color: #035240;
+}
+
+.artwork-actions .delete-btn {
+    background-color: #ff4d4f; /* Red */
     color: white;
-  }
-  
-  .admin-panel .actions button {
-    margin-right: 10px;
-  }
-  .delete-btn {
-    background-color: #d9534f; /* Bootstrap Danger Red */
-    /* color: white;
     border: none;
     border-radius: 5px;
     padding: 5px 10px;
     cursor: pointer;
-    font-size: 16px; /* Adjust icon size */
-    /* display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease; */ 
-  /* } */
-  
-  /* .delete-btn:hover {
-    background-color: #c9302c; /* Darker red on hover */
-  /* } */
-  
-  /* .delete-btn svg {
-    height: 1em;
-    width: 1em; */
-  /* }  */
-  /* Ensure no green buttons appear
-button {
-    background-color: initial; /* Reset default green if inherited */
-    /* color: initial;
-    border: none; */
-  /* }  */
-
-  .admin-panel {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  h1, h2 {
-    font-family: 'Griffy', cursive;
-    color: #046c4e;
-  }
-  
-  .add-artwork input,
-  .add-artwork textarea {
-    display: block;
-    width: 100%;
-    margin: 10px 0;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background-color: #046c4e;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #035240;
-  }
-  
-  .artwork-item {
+    font-size: 16px;
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    justify-content: center;
+    transition: background-color 0.3s ease;
   }
   
-  .artwork-thumbnail {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-right: 20px;
+  .artwork-actions .delete-btn:hover {
+    background-color: #d9363e; /* Darker red for hover effect */
   }
   
-  .delete-btn {
-    background-color: #d9534f; /* Bootstrap Danger Red */
+  .artwork-actions .delete-btn svg {
+    height: 1em;
+    width: 1em;
+  }
+
+/* Delete button styling (red) */
+.delete-btn {
+    background-color: #ff4d4f; /* Red */
     color: white;
     border: none;
     border-radius: 5px;
     padding: 5px 10px;
     cursor: pointer;
-    font-size: 16px; /* Adjust icon size */
+    font-size: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -128,20 +157,226 @@ button {
   }
   
   .delete-btn:hover {
-    background-color: #c9302c; /* Darker red on hover */
+    background-color: #d9363e; /* Darker red for hover effect */
   }
   
   .delete-btn svg {
     height: 1em;
     width: 1em;
   }
+  
 
-  /* Edit button styles */
+/* Edit button styling */
 .edit-btn {
-    background-color: #28a745; /* Green */
-    color: white;
+  background-color: #28a745; /* Green */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.edit-btn:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+.add-artwork {
+    margin-bottom: 40px; /* Add spacing below the Add Artwork section */
   }
   
-  .edit-btn:hover {
-    background-color: #218838; /* Darker green on hover */
+  .manage-artworks {
+    margin-top: 20px; /* Optional: Add slight spacing above Manage Artwork section */
   }
+
+  /* Modal styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background: #fff;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 90%;
+    max-height: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 20px; /* Ensure extra padding at the bottom */
+  }
+  
+  .modal-image {
+    max-width: 90vw; /* Limit image width to 90% of the viewport width */
+    max-height: 80vh; /* Limit image height to 80% of the viewport height */
+    object-fit: contain; /* Ensure the image scales proportionally */
+    border-radius: 10px;
+  }
+  
+  .close-btn {
+    margin-top: 10px;
+    margin-bottom: 20px; /* Add padding below the button */
+    padding: 10px 20px;
+    background: #046c4e;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .close-btn:hover {
+    background: #035240;
+  }
+  
+  /* Edit field styling */
+.edit-field {
+    display: block;
+    width: 100%; /* Full width */
+    margin: 10px 0; /* Add spacing between fields */
+    padding: 10px; /* Add padding for better usability */
+    font-size: 1em; /* Match the font size of other elements */
+    border: 1px solid #ddd; /* Light border for consistency */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #f9f9f9; /* Light background for a clean look */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle inner shadow */
+    font-family: 'Griffy', cursive; /* Match your custom font */
+  }
+  
+  .edit-field:focus {
+    border-color: #046c4e; /* Highlighted border color */
+    outline: none; /* Remove default outline */
+    box-shadow: 0 0 5px rgba(4, 108, 78, 0.5); /* Add a soft focus glow */
+  }
+
+  /* Save and Cancel buttons inside edit mode */
+.save-btn,
+.cancel-btn {
+  margin-top: 10px;
+  margin-right: 10px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+  font-family: 'Griffy', cursive;
+  transition: background-color 0.3s ease;
+}
+
+/* Save button (green) */
+.save-btn {
+  background-color: #28a745; /* Green */
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: #218838; /* Darker green for hover effect */
+}
+
+/* Cancel button (red) */
+.cancel-btn {
+  background-color: #dc3545; /* Red */
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #c82333; /* Darker red for hover effect */
+}
+
+.edit-fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Add space between fields */
+  }
+  
+  .edit-field-label {
+    font-size: 0.9em;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .edit-field {
+    width: 90%; /* Limit width to fit within the card */
+    max-width: 250px; /* Ensure it doesn't exceed a fixed size */
+    padding: 8px; /* Adjust padding for better usability */
+    font-size: 0.9em; /* Slightly smaller text */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle inner shadow */
+    margin: 0 auto; /* Center the field horizontally */
+  }
+  
+  .edit-field:focus {
+    border-color: #046c4e; /* Highlighted border color */
+    outline: none; /* Remove default outline */
+    box-shadow: 0 0 5px rgba(4, 108, 78, 0.5); /* Add a soft focus glow */
+  }
+  
+  .edit-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .add-artwork-card {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    max-width: 400px; /* Limit the card's width to 400px */
+    margin: 0 auto; /* Center the card horizontally */
+  }
+  .custom-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 40px 0;
+  }
+  
+  .custom-divider::before,
+  .custom-divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 2px solid #ddd; /* Light gray line */
+    margin: 0 10px;
+  }
+  
+  .custom-divider span {
+    font-family: 'Griffy', cursive; /* Match your design */
+    font-size: 1.2em;
+    color: #046c4e; /* Match the theme */
+    text-transform: uppercase;
+  }
+  
+  .add-artwork-select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    appearance: none; /* Remove default browser styles for consistency */
+    cursor: pointer;
+  }
+  
+  .add-artwork-select:focus {
+    border-color: #046c4e;
+    outline: none;
+    box-shadow: 0 0 5px rgba(4, 108, 78, 0.5);
+  }
+  

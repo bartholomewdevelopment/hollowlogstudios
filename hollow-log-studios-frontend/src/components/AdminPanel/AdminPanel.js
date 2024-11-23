@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./AdminPanel.css"; // Ensure you style as needed
+import "./AdminPanel.css";
 import { FaTrash, FaEdit } from "react-icons/fa";
 
 const AdminPanel = () => {
@@ -15,12 +15,16 @@ const AdminPanel = () => {
   });
   const [editingArtwork, setEditingArtwork] = useState(null);
   const [updatedFields, setUpdatedFields] = useState({});
+  const [modalImage, setModalImage] = useState(null); // For modal functionality
 
   // Fetch artworks
   const fetchArtworks = async () => {
     try {
       const response = await axios.get("/api/artworks");
-      setArtworks(response.data);
+      const sortedArtworks = response.data.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setArtworks(sortedArtworks);
     } catch (error) {
       console.error("Error fetching artworks:", error);
     }
@@ -29,34 +33,33 @@ const AdminPanel = () => {
   // Add new artwork
   const addArtwork = async () => {
     const formData = new FormData();
-    formData.append('title', newArtwork.title);
-    formData.append('description', newArtwork.description);
-    formData.append('price', newArtwork.price);
-    formData.append('category', newArtwork.category);
-    formData.append('availability', newArtwork.availability);
-    formData.append('image', newArtwork.image); // Ensure 'image' matches the backend key
-  
+    formData.append("title", newArtwork.title);
+    formData.append("description", newArtwork.description);
+    formData.append("price", newArtwork.price);
+    formData.append("category", newArtwork.category);
+    formData.append("availability", newArtwork.availability);
+    formData.append("image", newArtwork.image);
+
     try {
-      const response = await axios.post('/api/artworks', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      await axios.post("/api/artworks", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log('Artwork added:', response.data);
-      alert('Artwork added successfully!');
+      alert("Artwork added successfully!");
       setNewArtwork({
-        title: '',
-        description: '',
-        price: '',
-        category: '',
-        availability: 'Print',
+        title: "",
+        description: "",
+        price: "",
+        category: "",
+        availability: "Print",
         image: null,
       });
       fetchArtworks();
     } catch (error) {
-      console.error('Error adding artwork:', error.response?.data || error.message);
-      alert('Failed to add artwork.');
+      console.error("Error adding artwork:", error);
+      alert("Failed to add artwork.");
     }
   };
-  
+
   // Delete artwork
   const deleteArtwork = async (id) => {
     if (window.confirm("Are you sure you want to delete this artwork?")) {
@@ -84,6 +87,16 @@ const AdminPanel = () => {
     }
   };
 
+  // Show modal with full image
+  const openModal = (imageURL) => {
+    setModalImage(imageURL);
+  };
+
+  // Close modal
+  const closeModal = () => {
+    setModalImage(null);
+  };
+
   useEffect(() => {
     fetchArtworks();
   }, []);
@@ -94,97 +107,148 @@ const AdminPanel = () => {
 
       {/* Add Artwork Section */}
       <div className="add-artwork">
-        <h2>Add New Artwork</h2>
-        <input
-          type="text"
-          placeholder="Title"
-          value={newArtwork.title}
-          onChange={(e) => setNewArtwork({ ...newArtwork, title: e.target.value })}
-        />
-        <textarea
-          placeholder="Description"
-          value={newArtwork.description}
-          onChange={(e) => setNewArtwork({ ...newArtwork, description: e.target.value })}
-        />
-        <input
-          type="number"
-          placeholder="Price"
-          value={newArtwork.price}
-          onChange={(e) => setNewArtwork({ ...newArtwork, price: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Category"
-          value={newArtwork.category}
-          onChange={(e) => setNewArtwork({ ...newArtwork, category: e.target.value })}
-        />
-        <select
-          value={newArtwork.availability}
-          onChange={(e) => setNewArtwork({ ...newArtwork, availability: e.target.value })}
-        >
-          <option value="Print">Print</option>
-          <option value="Original">Original</option>
-          <option value="Both">Both</option>
-        </select>
-        <input
-          type="file"
-          onChange={(e) => setNewArtwork({ ...newArtwork, image: e.target.files[0] })}
-        />
-        <button onClick={addArtwork}>Add Artwork</button>
-      </div>
+  <h2>Add New Artwork</h2>
+  <div className="add-artwork-card">
+    <label className="add-artwork-label">Title</label>
+    <input
+      type="text"
+      placeholder="Enter artwork title"
+      value={newArtwork.title}
+      onChange={(e) => setNewArtwork({ ...newArtwork, title: e.target.value })}
+      className="add-artwork-input"
+    />
+
+    <label className="add-artwork-label">Description</label>
+    <textarea
+      placeholder="Enter artwork description"
+      value={newArtwork.description}
+      onChange={(e) =>
+        setNewArtwork({ ...newArtwork, description: e.target.value })
+      }
+      className="add-artwork-input"
+    ></textarea>
+
+    <label className="add-artwork-label">Price</label>
+    <input
+      type="number"
+      placeholder="Enter artwork price"
+      value={newArtwork.price}
+      onChange={(e) => setNewArtwork({ ...newArtwork, price: e.target.value })}
+      className="add-artwork-input"
+    />
+
+<label className="add-artwork-label">Category</label>
+<select
+  value={newArtwork.category}
+  onChange={(e) => setNewArtwork({ ...newArtwork, category: e.target.value })}
+  className="add-artwork-select"
+>
+  <option value="" disabled>Select a category</option>
+  <option value="Illustration">Illustration</option>
+  <option value="Mural">Mural</option>
+  <option value="Portrait">Portrait</option>
+</select>
+
+
+    <label className="add-artwork-label">Availability</label>
+    <select
+      value={newArtwork.availability}
+      onChange={(e) =>
+        setNewArtwork({ ...newArtwork, availability: e.target.value })
+      }
+      className="add-artwork-select"
+    >
+      <option value="Print">Print</option>
+      <option value="Original">Original</option>
+      <option value="Both">Both</option>
+    </select>
+
+    <label className="add-artwork-label">Image</label>
+    <input
+      type="file"
+      onChange={(e) => setNewArtwork({ ...newArtwork, image: e.target.files[0] })}
+      className="add-artwork-input"
+    />
+
+    <button className="add-artwork-btn" onClick={addArtwork}>
+      Add Artwork
+    </button>
+  </div>
+</div>
+
+<div className="custom-divider">
+  <span>OR</span>
+</div>
 
       {/* Manage Artworks Section */}
-      <div className="manage-artworks">
-        <h2>Manage Artworks</h2>
-        <ul>
-          {artworks.map((artwork) => (
-            <li key={artwork._id} className="artwork-item">
-              <img
-                src={artwork.imageURL}
-                alt={artwork.title}
-                className="artwork-thumbnail"
-              />
-              {editingArtwork === artwork._id ? (
-                <div>
-                  <input
-                    type="text"
-                    defaultValue={artwork.title}
-                    onChange={(e) =>
-                      setUpdatedFields({
-                        ...updatedFields,
-                        title: e.target.value,
-                      })
-                    }
-                  />
-                  <textarea
-                    defaultValue={artwork.description}
-                    onChange={(e) =>
-                      setUpdatedFields({
-                        ...updatedFields,
-                        description: e.target.value,
-                      })
-                    }
-                  />
-                  <input
-                    type="number"
-                    defaultValue={artwork.price}
-                    onChange={(e) =>
-                      setUpdatedFields({
-                        ...updatedFields,
-                        price: e.target.value,
-                      })
-                    }
-                  />
-                  <button onClick={() => saveChanges(artwork._id)}>Save</button>
-                  <button onClick={() => setEditingArtwork(null)}>
+      <h2>Manage Artworks</h2>
+      <div className="artworks-container">
+        {artworks.map((artwork) => (
+          <div key={artwork._id} className="artwork-card">
+            <img
+              src={artwork.imageURL || "https://via.placeholder.com/150"}
+              alt={artwork.title}
+              className="artwork-image"
+              onClick={() => openModal(artwork.imageURL)} // Open modal on image click
+            />
+            {editingArtwork === artwork._id ? (
+              <div className="edit-fields-container">
+                <label className="edit-field-label">Title</label>
+                <input
+                  type="text"
+                  defaultValue={artwork.title}
+                  onChange={(e) =>
+                    setUpdatedFields({
+                      ...updatedFields,
+                      title: e.target.value,
+                    })
+                  }
+                  className="edit-field"
+                />
+                <label className="edit-field-label">Description</label>
+                <textarea
+                  defaultValue={artwork.description}
+                  onChange={(e) =>
+                    setUpdatedFields({
+                      ...updatedFields,
+                      description: e.target.value,
+                    })
+                  }
+                  className="edit-field"
+                ></textarea>
+                <label className="edit-field-label">Price</label>
+                <input
+                  type="number"
+                  defaultValue={artwork.price}
+                  onChange={(e) =>
+                    setUpdatedFields({
+                      ...updatedFields,
+                      price: e.target.value,
+                    })
+                  }
+                  className="edit-field"
+                />
+                <div className="edit-actions">
+                  <button
+                    className="save-btn"
+                    onClick={() => saveChanges(artwork._id)}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="cancel-btn"
+                    onClick={() => setEditingArtwork(null)}
+                  >
                     Cancel
                   </button>
                 </div>
-              ) : (
-                <div>
-                  <h3>{artwork.title}</h3>
-                  <p>{artwork.description}</p>
-                  <p>${artwork.price}</p>
+              </div>
+            ) : (
+              <div>
+                <h3>{artwork.title}</h3>
+                <p>{artwork.description}</p>
+                <p>${artwork.price}</p>
+                <div className="artwork-actions">
                   <button
                     className="edit-btn"
                     onClick={() => setEditingArtwork(artwork._id)}
@@ -198,11 +262,23 @@ const AdminPanel = () => {
                     <FaTrash /> Delete
                   </button>
                 </div>
-              )}
-            </li>
-          ))}
-        </ul>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
+
+      {/* Modal */}
+      {modalImage && (
+        <div className="modal">
+          <div className="modal-content">
+            <button className="close-btn" onClick={closeModal}>
+              Back
+            </button>
+            <img src={modalImage} alt="Full Artwork" className="modal-image" />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
