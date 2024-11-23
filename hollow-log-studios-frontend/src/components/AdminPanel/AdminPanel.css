@@ -380,3 +380,11 @@
     box-shadow: 0 0 5px rgba(4, 108, 78, 0.5);
   }
   
+  .add-artwork-input {
+    margin-bottom: 20px; /* Add more spacing for multiple fields */
+  }
+  
+  .add-artwork-label {
+    margin-top: 10px; /* Add spacing above labels */
+  }
+  

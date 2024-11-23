@@ -33,11 +33,19 @@ const AdminPanel = () => {
   // Add new artwork
   const addArtwork = async () => {
     const formData = new FormData();
+
     formData.append("title", newArtwork.title);
     formData.append("description", newArtwork.description);
-    formData.append("price", newArtwork.price);
     formData.append("category", newArtwork.category);
     formData.append("availability", newArtwork.availability);
+
+    if (newArtwork.availability === "Both") {
+      formData.append("printPrice", newArtwork.printPrice || 0);
+      formData.append("originalPrice", newArtwork.originalPrice || 0);
+    } else {
+      formData.append("price", newArtwork.price || 0);
+    }
+
     formData.append("image", newArtwork.image);
 
     try {
@@ -48,14 +56,19 @@ const AdminPanel = () => {
       setNewArtwork({
         title: "",
         description: "",
-        price: "",
         category: "",
         availability: "Print",
+        price: "",
+        printPrice: "",
+        originalPrice: "",
         image: null,
       });
       fetchArtworks();
     } catch (error) {
-      console.error("Error adding artwork:", error);
+      console.error(
+        "Error adding artwork:",
+        error.response?.data || error.message
+      );
       alert("Failed to add artwork.");
     }
   };
@@ -106,79 +119,120 @@ const AdminPanel = () => {
       <h1>Admin Panel</h1>
 
       {/* Add Artwork Section */}
+      {/* Add Artwork Section */}
       <div className="add-artwork">
-  <h2>Add New Artwork</h2>
-  <div className="add-artwork-card">
-    <label className="add-artwork-label">Title</label>
-    <input
-      type="text"
-      placeholder="Enter artwork title"
-      value={newArtwork.title}
-      onChange={(e) => setNewArtwork({ ...newArtwork, title: e.target.value })}
-      className="add-artwork-input"
-    />
+        <h2>Add New Artwork</h2>
+        <div className="add-artwork-card">
+          <label className="add-artwork-label">Title</label>
+          <input
+            type="text"
+            placeholder="Enter artwork title"
+            value={newArtwork.title}
+            onChange={(e) =>
+              setNewArtwork({ ...newArtwork, title: e.target.value })
+            }
+            className="add-artwork-input"
+          />
 
-    <label className="add-artwork-label">Description</label>
-    <textarea
-      placeholder="Enter artwork description"
-      value={newArtwork.description}
-      onChange={(e) =>
-        setNewArtwork({ ...newArtwork, description: e.target.value })
-      }
-      className="add-artwork-input"
-    ></textarea>
+          <label className="add-artwork-label">Description</label>
+          <textarea
+            placeholder="Enter artwork description"
+            value={newArtwork.description}
+            onChange={(e) =>
+              setNewArtwork({ ...newArtwork, description: e.target.value })
+            }
+            className="add-artwork-input"
+          ></textarea>
 
-    <label className="add-artwork-label">Price</label>
-    <input
-      type="number"
-      placeholder="Enter artwork price"
-      value={newArtwork.price}
-      onChange={(e) => setNewArtwork({ ...newArtwork, price: e.target.value })}
-      className="add-artwork-input"
-    />
+          <label className="add-artwork-label">Category</label>
+          <select
+            value={newArtwork.category}
+            onChange={(e) =>
+              setNewArtwork({ ...newArtwork, category: e.target.value })
+            }
+            className="add-artwork-select"
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            <option value="Illustration">Illustration</option>
+            <option value="Mural">Mural</option>
+            <option value="Portrait">Portrait</option>
+          </select>
 
-<label className="add-artwork-label">Category</label>
-<select
-  value={newArtwork.category}
-  onChange={(e) => setNewArtwork({ ...newArtwork, category: e.target.value })}
-  className="add-artwork-select"
->
-  <option value="" disabled>Select a category</option>
-  <option value="Illustration">Illustration</option>
-  <option value="Mural">Mural</option>
-  <option value="Portrait">Portrait</option>
-</select>
+          <label className="add-artwork-label">Availability</label>
+          <select
+            value={newArtwork.availability}
+            onChange={(e) =>
+              setNewArtwork({ ...newArtwork, availability: e.target.value })
+            }
+            className="add-artwork-select"
+          >
+            <option value="Print">Print</option>
+            <option value="Original">Original</option>
+            <option value="Both">Both</option>
+          </select>
 
+          {/* Conditional rendering for Price fields */}
+          {newArtwork.availability === "Both" ? (
+            <>
+              <label className="add-artwork-label">Print Price</label>
+              <input
+                type="number"
+                placeholder="Enter print price"
+                value={newArtwork.printPrice || ""}
+                onChange={(e) =>
+                  setNewArtwork({ ...newArtwork, printPrice: e.target.value })
+                }
+                className="add-artwork-input"
+              />
+              <label className="add-artwork-label">Original Price</label>
+              <input
+                type="number"
+                placeholder="Enter original price"
+                value={newArtwork.originalPrice || ""}
+                onChange={(e) =>
+                  setNewArtwork({
+                    ...newArtwork,
+                    originalPrice: e.target.value,
+                  })
+                }
+                className="add-artwork-input"
+              />
+            </>
+          ) : (
+            <>
+              <label className="add-artwork-label">Price</label>
+              <input
+                type="number"
+                placeholder="Enter price"
+                value={newArtwork.price || ""}
+                onChange={(e) =>
+                  setNewArtwork({ ...newArtwork, price: e.target.value })
+                }
+                className="add-artwork-input"
+              />
+            </>
+          )}
 
-    <label className="add-artwork-label">Availability</label>
-    <select
-      value={newArtwork.availability}
-      onChange={(e) =>
-        setNewArtwork({ ...newArtwork, availability: e.target.value })
-      }
-      className="add-artwork-select"
-    >
-      <option value="Print">Print</option>
-      <option value="Original">Original</option>
-      <option value="Both">Both</option>
-    </select>
+          <label className="add-artwork-label">Image</label>
+          <input
+            type="file"
+            onChange={(e) =>
+              setNewArtwork({ ...newArtwork, image: e.target.files[0] })
+            }
+            className="add-artwork-input"
+          />
 
-    <label className="add-artwork-label">Image</label>
-    <input
-      type="file"
-      onChange={(e) => setNewArtwork({ ...newArtwork, image: e.target.files[0] })}
-      className="add-artwork-input"
-    />
+          <button className="add-artwork-btn" onClick={addArtwork}>
+            Add Artwork
+          </button>
+        </div>
+      </div>
 
-    <button className="add-artwork-btn" onClick={addArtwork}>
-      Add Artwork
-    </button>
-  </div>
-</div>
-
-<div className="custom-divider">
-  <span>OR</span>
-</div>
+      <div className="custom-divider">
+        <span>OR</span>
+      </div>
 
       {/* Manage Artworks Section */}
       <h2>Manage Artworks</h2>
