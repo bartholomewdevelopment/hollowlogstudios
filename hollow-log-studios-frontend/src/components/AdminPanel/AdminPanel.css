@@ -1,0 +1,147 @@
+/* .admin-panel {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-panel h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .admin-panel table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .admin-panel table th,
+  .admin-panel table td {
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .admin-panel table th {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  .admin-panel .actions button {
+    margin-right: 10px;
+  }
+  .delete-btn {
+    background-color: #d9534f; /* Bootstrap Danger Red */
+    /* color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 16px; /* Adjust icon size */
+    /* display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease; */ 
+  /* } */
+  
+  /* .delete-btn:hover {
+    background-color: #c9302c; /* Darker red on hover */
+  /* } */
+  
+  /* .delete-btn svg {
+    height: 1em;
+    width: 1em; */
+  /* }  */
+  /* Ensure no green buttons appear
+button {
+    background-color: initial; /* Reset default green if inherited */
+    /* color: initial;
+    border: none; */
+  /* }  */
+
+  .admin-panel {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1, h2 {
+    font-family: 'Griffy', cursive;
+    color: #046c4e;
+  }
+  
+  .add-artwork input,
+  .add-artwork textarea {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    background-color: #046c4e;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #035240;
+  }
+  
+  .artwork-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .artwork-thumbnail {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 20px;
+  }
+  
+  .delete-btn {
+    background-color: #d9534f; /* Bootstrap Danger Red */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 16px; /* Adjust icon size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+  }
+  
+  .delete-btn:hover {
+    background-color: #c9302c; /* Darker red on hover */
+  }
+  
+  .delete-btn svg {
+    height: 1em;
+    width: 1em;
+  }
+
+  /* Edit button styles */
+.edit-btn {
+    background-color: #28a745; /* Green */
+    color: white;
+  }
+  
+  .edit-btn:hover {
+    background-color: #218838; /* Darker green on hover */
+  }
