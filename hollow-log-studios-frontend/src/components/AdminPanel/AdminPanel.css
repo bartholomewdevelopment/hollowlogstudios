@@ -1,5 +1,6 @@
 /* Import Griffy font */
 @import url('https://fonts.googleapis.com/css2?family=Griffy&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
 
 /* General styles for the Admin Panel */
 .admin-panel {
@@ -57,20 +58,22 @@
 
 /* Individual artwork card */
 .artwork-card {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 300px;
-  padding: 15px;
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.artwork-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-}
+    position: relative;
+    /* Existing card styles */
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .artwork-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
 
 /* Card title */
 .artwork-card h3 {
@@ -387,4 +390,24 @@
   .add-artwork-label {
     margin-top: 10px; /* Add spacing above labels */
   }
+  
+  /* Ribbon styles */
+  .ribbon {
+    position: absolute;
+    top: 10px;
+    left: -10px;
+    background: #ff4d4f; /* Red for Originals */
+    color: white;
+    padding: 5px 15px;
+    font-size: 0.8em;
+    font-family: 'Roboto', sans-serif; /* Modern and legible font */
+    font-weight: bold;
+    text-transform: uppercase;
+    transform: rotate(-45deg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  
+  /* Ensure the card is positioned relative to contain the ribbon */
+
   

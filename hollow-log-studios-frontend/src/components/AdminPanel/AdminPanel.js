@@ -239,6 +239,10 @@ const AdminPanel = () => {
       <div className="artworks-container">
         {artworks.map((artwork) => (
           <div key={artwork._id} className="artwork-card">
+            {/* Ribbon for Originals */}
+            {artwork.availability === "Original" && (
+              <div className="ribbon">Original</div>
+            )}
             <img
               src={artwork.imageURL || "https://via.placeholder.com/150"}
               alt={artwork.title}
