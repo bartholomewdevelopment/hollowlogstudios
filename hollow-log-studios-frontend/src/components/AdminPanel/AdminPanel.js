@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import "./AdminPanel.css";
 import { FaTrash, FaEdit } from "react-icons/fa";
+import {
+  getAllArtworks,
+  createArtwork,
+  createBothArtworks,
+  updateArtwork,
+  deleteArtwork
+} from "../../firebase/artworkService";
 
 const AdminPanel = () => {
   const [artworks, setArtworks] = useState([]);
@@ -17,41 +23,51 @@ const AdminPanel = () => {
   const [updatedFields, setUpdatedFields] = useState({});
   const [modalImage, setModalImage] = useState(null); // For modal functionality
 
-  // Fetch artworks
+  // Fetch artworks from Firebase
   const fetchArtworks = async () => {
     try {
-      const response = await axios.get("/api/artworks");
-      const sortedArtworks = response.data.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-      setArtworks(sortedArtworks);
+      const artworksList = await getAllArtworks();
+      setArtworks(artworksList);
     } catch (error) {
       console.error("Error fetching artworks:", error);
+      alert("Failed to fetch artworks.");
     }
   };
 
-  // Add new artwork
+  // Add new artwork to Firebase
   const addArtwork = async () => {
-    const formData = new FormData();
-
-    formData.append("title", newArtwork.title);
-    formData.append("description", newArtwork.description);
-    formData.append("category", newArtwork.category);
-    formData.append("availability", newArtwork.availability);
-
-    if (newArtwork.availability === "Both") {
-      formData.append("printPrice", newArtwork.printPrice || 0);
-      formData.append("originalPrice", newArtwork.originalPrice || 0);
-    } else {
-      formData.append("price", newArtwork.price || 0);
+    // Validation
+    if (!newArtwork.title || !newArtwork.category || !newArtwork.image) {
+      alert("Please fill in all required fields (title, category, and image).");
+      return;
     }
 
-    formData.append("image", newArtwork.image);
-
     try {
-      await axios.post("/api/artworks", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // Handle "Both" availability - creates two separate entries
+      if (newArtwork.availability === "Both") {
+        await createBothArtworks(
+          {
+            title: newArtwork.title,
+            description: newArtwork.description,
+            category: newArtwork.category,
+            printPrice: newArtwork.printPrice || 0,
+            originalPrice: newArtwork.originalPrice || 0,
+          },
+          newArtwork.image
+        );
+      } else {
+        await createArtwork(
+          {
+            title: newArtwork.title,
+            description: newArtwork.description,
+            category: newArtwork.category,
+            availability: newArtwork.availability,
+            price: newArtwork.price || 0,
+          },
+          newArtwork.image
+        );
+      }
+
       alert("Artwork added successfully!");
       setNewArtwork({
         title: "",
@@ -65,19 +81,16 @@ const AdminPanel = () => {
       });
       fetchArtworks();
     } catch (error) {
-      console.error(
-        "Error adding artwork:",
-        error.response?.data || error.message
-      );
-      alert("Failed to add artwork.");
+      console.error("Error adding artwork:", error);
+      alert("Failed to add artwork. Please try again.");
     }
   };
 
-  // Delete artwork
-  const deleteArtwork = async (id) => {
+  // Delete artwork from Firebase
+  const deleteArtworkHandler = async (artwork) => {
     if (window.confirm("Are you sure you want to delete this artwork?")) {
       try {
-        await axios.delete(`/api/artworks/${id}`);
+        await deleteArtwork(artwork.id, artwork.imageURL);
         alert("Artwork deleted successfully!");
         fetchArtworks();
       } catch (error) {
@@ -87,12 +100,18 @@ const AdminPanel = () => {
     }
   };
 
-  // Save artwork changes
+  // Save artwork changes to Firebase
   const saveChanges = async (id) => {
     try {
-      await axios.put(`/api/artworks/${id}`, updatedFields);
+      if (Object.keys(updatedFields).length === 0) {
+        alert("No changes to save.");
+        return;
+      }
+
+      await updateArtwork(id, updatedFields);
       alert("Artwork updated successfully!");
       setEditingArtwork(null);
+      setUpdatedFields({});
       fetchArtworks();
     } catch (error) {
       console.error("Error updating artwork:", error);
@@ -238,7 +257,7 @@ const AdminPanel = () => {
       <h2>Manage Artworks</h2>
       <div className="artworks-container">
         {artworks.map((artwork) => (
-          <div key={artwork._id} className="artwork-card">
+          <div key={artwork.id} className="artwork-card">
             {/* Ribbon for Originals */}
             {artwork.availability === "Original" && (
               <div className="ribbon">Original</div>
@@ -249,7 +268,7 @@ const AdminPanel = () => {
               className="artwork-image"
               onClick={() => openModal(artwork.imageURL)} // Open modal on image click
             />
-            {editingArtwork === artwork._id ? (
+            {editingArtwork === artwork.id ? (
               <div className="edit-fields-container">
                 <label className="edit-field-label">Title</label>
                 <input
@@ -289,7 +308,7 @@ const AdminPanel = () => {
                 <div className="edit-actions">
                   <button
                     className="save-btn"
-                    onClick={() => saveChanges(artwork._id)}
+                    onClick={() => saveChanges(artwork.id)}
                   >
                     Save
                   </button>
@@ -309,13 +328,13 @@ const AdminPanel = () => {
                 <div className="artwork-actions">
                   <button
                     className="edit-btn"
-                    onClick={() => setEditingArtwork(artwork._id)}
+                    onClick={() => setEditingArtwork(artwork.id)}
                   >
                     <FaEdit /> Edit
                   </button>
                   <button
                     className="delete-btn"
-                    onClick={() => deleteArtwork(artwork._id)}
+                    onClick={() => deleteArtworkHandler(artwork)}
                   >
                     <FaTrash /> Delete
                   </button>
