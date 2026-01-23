@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Commission } from '@/types/customer-portal';
-import CommissionFiles from './CommissionFiles';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +10,7 @@ import { getCommissionMessages, sendMessage } from '@/firebase/messageService';
 import MessageAttachment from '@/components/MessageAttachment';
 import type { Message } from '@/types/customer-portal';
 import { Input } from '@/components/ui/input';
+import { formatDate } from '@/utils/formatDate';
 
 interface CommissionDetailProps {
   commission: Commission;
@@ -95,7 +95,12 @@ const CommissionDetail: React.FC<CommissionDetailProps> = ({
 
     try {
       setSendingReply(true);
-      await sendMessage(commission.id, replyContent, files);
+      await sendMessage(
+        commission.id,
+        replyContent,
+        files.length > 0 ? files : undefined,
+        'admin'
+      );
       
       setReplyContent('');
       setFiles([]);
@@ -122,10 +127,9 @@ const CommissionDetail: React.FC<CommissionDetailProps> = ({
     <Card className="w-full">
       <CardContent className="p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="files">Files</TabsTrigger>
           </TabsList>
           
           <TabsContent value="details" className="mt-4">
@@ -179,11 +183,37 @@ const CommissionDetail: React.FC<CommissionDetailProps> = ({
                 <p>{commission.contact_email || 'No email provided'}</p>
                 {commission.contact_name && <p>{commission.contact_name}</p>}
                 {commission.contact_phone && <p>{commission.contact_phone}</p>}
+                {(commission.contact_address_line1 ||
+                  commission.contact_city ||
+                  commission.contact_state ||
+                  commission.contact_postal_code ||
+                  commission.contact_country) && (
+                  <div className="text-sm text-gray-600">
+                    {commission.contact_address_line1 && <p>{commission.contact_address_line1}</p>}
+                    {commission.contact_address_line2 && <p>{commission.contact_address_line2}</p>}
+                    <p>
+                      {[commission.contact_city, commission.contact_state, commission.contact_postal_code]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </p>
+                    {commission.contact_country && <p>{commission.contact_country}</p>}
+                  </div>
+                )}
+                {commission.contact_preferred_method && (
+                  <p className="text-sm text-gray-600">
+                    Preferred: {commission.contact_preferred_method}
+                  </p>
+                )}
+                {commission.contact_best_time && (
+                  <p className="text-sm text-gray-600">
+                    Best time: {commission.contact_best_time}
+                  </p>
+                )}
               </div>
               
               <div>
                 <h3 className="font-medium">Created</h3>
-                <p>{new Date(commission.created_at).toLocaleString()}</p>
+                <p>{formatDate(commission.created_at)}</p>
               </div>
             </div>
           </TabsContent>
@@ -212,7 +242,7 @@ const CommissionDetail: React.FC<CommissionDetailProps> = ({
                               {isAdmin ? 'You (Admin)' : message.sender?.first_name || 'Customer'}
                             </span>
                             <span className="text-gray-500">
-                              {new Date(message.created_at).toLocaleString()}
+                              {formatDate(message.created_at)}
                             </span>
                           </div>
                           <p className="mt-1">{message.content}</p>
@@ -308,10 +338,6 @@ const CommissionDetail: React.FC<CommissionDetailProps> = ({
                 </div>
               </div>
             </div>
-          </TabsContent>
-          
-          <TabsContent value="files" className="mt-4">
-            <CommissionFiles commissionId={commission.id} />
           </TabsContent>
         </Tabs>
       </CardContent>

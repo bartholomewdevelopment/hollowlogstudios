@@ -6,7 +6,10 @@ import {
   setPersistence,
   browserLocalPersistence,
   sendPasswordResetEmail,
-  User as FirebaseUser
+  User as FirebaseUser,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink
 } from 'firebase/auth';
 import {
   doc,
@@ -18,6 +21,32 @@ import {
 import { auth, db } from './config';
 import { User } from '@/types';
 
+const ensureUserProfile = async (uid: string, email: string): Promise<User> => {
+  const userRef = doc(db, 'users', uid);
+  const userDoc = await getDoc(userRef);
+
+  if (userDoc.exists()) {
+    const userData = userDoc.data() as User;
+    if (email.includes('@hollowlogstudios.com') && !userData.is_admin) {
+      await updateDoc(userRef, { is_admin: true });
+      return { id: uid, ...userData, is_admin: true } as User;
+    }
+    return { id: uid, ...userData } as User;
+  }
+
+  const newUser: Omit<User, 'id'> = {
+    email,
+    first_name: email.split('@')[0],
+    last_name: '',
+    is_admin: email.includes('@hollowlogstudios.com'),
+    created_at: serverTimestamp() as any,
+    updated_at: serverTimestamp() as any
+  };
+
+  await setDoc(userRef, newUser);
+  return { id: uid, ...newUser } as User;
+};
+
 /**
  * Sign in with email and password
  */
@@ -26,31 +55,8 @@ export const loginWithEmail = async (email: string, password: string): Promise<{
     await setPersistence(auth, browserLocalPersistence);
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
-    // Get or create user profile in Firestore
-    const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
-
-    if (userDoc.exists()) {
-      const userData = userDoc.data() as User;
-      // Auto-promote hollowlogstudios.com emails to admin
-      if (email.includes('@hollowlogstudios.com') && !userData.is_admin) {
-        await updateDoc(doc(db, 'users', userCredential.user.uid), { is_admin: true });
-        return { user: { ...userData, is_admin: true }, error: null };
-      }
-      return { user: { id: userDoc.id, ...userData } as User, error: null };
-    }
-
-    // Create user profile if it doesn't exist
-    const newUser: Omit<User, 'id'> = {
-      email,
-      first_name: email.split('@')[0],
-      last_name: '',
-      is_admin: email.includes('@hollowlogstudios.com'),
-      created_at: serverTimestamp() as any,
-      updated_at: serverTimestamp() as any
-    };
-
-    await setDoc(doc(db, 'users', userCredential.user.uid), newUser);
-    return { user: { id: userCredential.user.uid, ...newUser } as User, error: null };
+    const user = await ensureUserProfile(userCredential.user.uid, email);
+    return { user, error: null };
   } catch (error) {
     console.error('Error signing in:', error);
     return { user: null, error };
@@ -85,6 +91,44 @@ export const register = async (
     return { user: null, error };
   }
 };
+
+/**
+ * Send a magic sign-in link via email
+ */
+export const sendMagicLink = async (
+  email: string,
+  redirectUrl: string
+): Promise<{ error: any }> => {
+  try {
+    await sendSignInLinkToEmail(auth, email, {
+      url: redirectUrl,
+      handleCodeInApp: true
+    });
+    return { error: null };
+  } catch (error) {
+    console.error('Error sending magic link:', error);
+    return { error };
+  }
+};
+
+/**
+ * Complete magic link sign-in
+ */
+export const signInWithMagicLink = async (
+  email: string,
+  link: string
+): Promise<{ user: User | null; error: any }> => {
+  try {
+    const userCredential = await signInWithEmailLink(auth, email, link);
+    const user = await ensureUserProfile(userCredential.user.uid, email);
+    return { user, error: null };
+  } catch (error) {
+    console.error('Error signing in with magic link:', error);
+    return { user: null, error };
+  }
+};
+
+export const isMagicLink = (link: string) => isSignInWithEmailLink(auth, link);
 
 /**
  * Sign out current user

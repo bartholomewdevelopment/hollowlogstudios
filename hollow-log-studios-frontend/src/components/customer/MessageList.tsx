@@ -7,11 +7,13 @@ import { useToast } from '@/hooks/use-toast';
 import MessageAttachment from '@/components/MessageAttachment';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PlusCircle } from 'lucide-react';
+import { formatDate } from '@/utils/formatDate';
 
 interface MessageListProps {
   commissionId?: string;
   messages?: Message[];
   isLoading?: boolean;
+  refreshTrigger?: number;
   onRefresh?: () => void;
   onNewMessage?: () => void;
 }
@@ -20,6 +22,7 @@ const MessageList: React.FC<MessageListProps> = ({
   commissionId, 
   messages: propMessages, 
   isLoading: propLoading,
+  refreshTrigger,
   onRefresh,
   onNewMessage 
 }) => {
@@ -56,7 +59,7 @@ const MessageList: React.FC<MessageListProps> = ({
     };
 
     fetchMessages();
-  }, [commissionId, propMessages, toast]);
+  }, [commissionId, propMessages, refreshTrigger, toast]);
 
   // Use prop loading state if provided, otherwise use local state
   const isLoading = propLoading !== undefined ? propLoading : loading;
@@ -111,7 +114,7 @@ const MessageList: React.FC<MessageListProps> = ({
                       {isFromUser ? 'You' : 'Artist'}
                     </span>
                     <span className="text-gray-500">
-                      {new Date(message.created_at).toLocaleString()}
+                      {formatDate(message.created_at)}
                     </span>
                   </div>
                   <p className="mt-1">{message.content}</p>

@@ -3,6 +3,7 @@ import { CartItem } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from './AuthContext';
 import { saveAbandonedCart } from '@/firebase/cartService';
+import { v4 as uuidv4 } from 'uuid';
 
 interface CartContextType {
   cartItems: CartItem[];
@@ -50,7 +51,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedSessionId) {
       setSessionId(savedSessionId);
     } else {
-      const newSessionId = crypto.randomUUID();
+      const newSessionId = uuidv4();
       localStorage.setItem('cart_session_id', newSessionId);
       setSessionId(newSessionId);
     }
@@ -86,12 +87,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return total + (item.price || 0) * item.quantity;
         }, 0);
 
+        // Get email from user account or localStorage
+        const customerEmail = user?.email || localStorage.getItem('customer_email') || undefined;
+
         saveAbandonedCart({
           user_id: user?.id,
           session_id: sessionId,
           cart_items: cartItems,
           total_price: totalPrice,
-          user_email: user?.email,
+          user_email: customerEmail,
           user_name: user ? `${user.first_name} ${user.last_name}` : undefined
         }).catch(err => console.error('Error saving abandoned cart:', err));
       }
@@ -100,17 +104,28 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [cartItems, user, sessionId]);
 
-  const getCartItemKey = (id: string, variant?: string) => {
-    return variant ? `${id}-${variant}` : id;
+  // Create a unique key for cart items including size/color variants
+  const getCartItemKey = (item: { id: string; variant?: string; size?: string; color?: string }) => {
+    const parts = [item.id];
+    if (item.variant) parts.push(item.variant);
+    if (item.size) parts.push(item.size);
+    if (item.color) parts.push(item.color);
+    return parts.join('-');
+  };
+
+  // Simple key from id and variant string (for backward compatibility)
+  const getSimpleKey = (id: string, variantStr?: string) => {
+    return variantStr ? `${id}-${variantStr}` : id;
   };
 
   const addToCart = (item: Omit<CartItem, 'quantity'> & { variant?: string }) => {
     const { variant, ...itemData } = item;
-    const cartItemKey = getCartItemKey(item.id, variant);
+    const newItem = { ...itemData, variant };
+    const cartItemKey = getCartItemKey(newItem as CartItem);
 
     setCartItems(prevItems => {
       const existingItemIndex = prevItems.findIndex(i =>
-        getCartItemKey(i.id, i.variant as string) === cartItemKey
+        getCartItemKey(i) === cartItemKey
       );
 
       if (existingItemIndex >= 0) {
@@ -133,12 +148,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCartOpen(true);
   };
 
-  const removeFromCart = (id: string, variant?: string) => {
-    const cartItemKey = getCartItemKey(id, variant);
+  const removeFromCart = (id: string, variantKey?: string) => {
+    const searchKey = getSimpleKey(id, variantKey);
 
     setCartItems(prevItems => {
       const itemToRemove = prevItems.find(item =>
-        getCartItemKey(item.id, item.variant as string) === cartItemKey
+        getCartItemKey(item) === searchKey
       );
 
       if (itemToRemove) {
@@ -149,22 +164,22 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       return prevItems.filter(item =>
-        getCartItemKey(item.id, item.variant as string) !== cartItemKey
+        getCartItemKey(item) !== searchKey
       );
     });
   };
 
-  const updateQuantity = (id: string, quantity: number, variant?: string) => {
-    const cartItemKey = getCartItemKey(id, variant);
+  const updateQuantity = (id: string, quantity: number, variantKey?: string) => {
+    const searchKey = getSimpleKey(id, variantKey);
 
     if (quantity <= 0) {
-      removeFromCart(id, variant);
+      removeFromCart(id, variantKey);
       return;
     }
 
     setCartItems(prevItems =>
       prevItems.map(item =>
-        getCartItemKey(item.id, item.variant as string) === cartItemKey
+        getCartItemKey(item) === searchKey
           ? { ...item, quantity }
           : item
       )

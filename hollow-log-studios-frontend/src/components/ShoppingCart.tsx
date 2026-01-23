@@ -1,14 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/contexts/CartContext';
 import CartItem from '@/components/CartItem';
 import CheckoutButton from '@/components/CheckoutButton';
-import { ShoppingBag, Truck } from 'lucide-react';
+import EmailCapture from '@/components/EmailCapture';
+import { ShoppingBag, Truck, Mail, Check } from 'lucide-react';
 
 const ShoppingCart: React.FC = () => {
   const { cartItems, cartOpen, toggleCart, clearCart, totalItems, totalPrice, shippingCost, grandTotal } = useCart();
+  const [showEmailCapture, setShowEmailCapture] = useState(false);
+  const [customerEmail, setCustomerEmail] = useState<string | null>(null);
+
+  // Check for stored email on mount
+  useEffect(() => {
+    const storedEmail = localStorage.getItem('customer_email');
+    if (storedEmail) {
+      setCustomerEmail(storedEmail);
+    }
+  }, []);
+
+  // Show email capture when cart opens with items and no email stored
+  useEffect(() => {
+    if (cartOpen && cartItems.length > 0 && !customerEmail) {
+      const skipped = localStorage.getItem('email_capture_skipped');
+      if (!skipped) {
+        // Small delay so the cart animation completes first
+        const timer = setTimeout(() => setShowEmailCapture(true), 500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [cartOpen, cartItems.length, customerEmail]);
+
+  const handleEmailSubmit = (email: string) => {
+    setCustomerEmail(email);
+  };
 
   return (
     <Sheet open={cartOpen} onOpenChange={toggleCart}>
@@ -74,6 +101,30 @@ const ShoppingCart: React.FC = () => {
                   </p>
                 </div>
               </div>
+
+              {/* Email status */}
+              {customerEmail ? (
+                <div className="bg-green-50 p-3 rounded-lg mb-4">
+                  <div className="flex items-center">
+                    <Check className="mr-2 h-4 w-4 text-green-600" />
+                    <p className="text-sm text-green-800">
+                      Updates will be sent to <strong>{customerEmail}</strong>
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowEmailCapture(true)}
+                  className="w-full bg-gray-50 hover:bg-gray-100 p-3 rounded-lg mb-4 text-left transition-colors"
+                >
+                  <div className="flex items-center">
+                    <Mail className="mr-2 h-4 w-4 text-gray-500" />
+                    <p className="text-sm text-gray-600">
+                      <strong>Add email</strong> for order updates
+                    </p>
+                  </div>
+                </button>
+              )}
               
               <div className="flex flex-col gap-2">
                 <CheckoutButton />
@@ -89,6 +140,13 @@ const ShoppingCart: React.FC = () => {
           </div>
         )}
       </SheetContent>
+
+      {/* Email Capture Modal */}
+      <EmailCapture
+        open={showEmailCapture}
+        onOpenChange={setShowEmailCapture}
+        onEmailSubmit={handleEmailSubmit}
+      />
     </Sheet>
   );
 };

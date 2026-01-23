@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { uploadMultipleFiles } from '@/firebase/uploadService';
 import { collection, query, where, orderBy, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '@/firebase/config';
+import { formatDate } from '@/utils/formatDate';
 
 interface CommissionFile {
   id: string;
@@ -224,7 +225,7 @@ const CommissionFiles: React.FC<CommissionFilesProps> = ({ commissionId }) => {
                       <div className="font-medium">{file.file_name}</div>
                       <div className="text-xs text-gray-500">
                         {(file.file_size / 1024).toFixed(1)} KB •
-                        {file.created_at ? new Date(file.created_at).toLocaleString() : 'Unknown date'}
+                        {formatDate(file.created_at)}
                       </div>
                     </div>
                   </div>

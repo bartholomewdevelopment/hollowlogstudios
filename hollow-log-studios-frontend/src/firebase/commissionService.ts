@@ -81,6 +81,27 @@ export async function getUserCommissions(userId: string): Promise<Commission[]> 
 }
 
 /**
+ * Get commissions by contact email
+ */
+export async function getCommissionsByContactEmail(email: string): Promise<Commission[]> {
+  try {
+    const q = query(
+      collection(db, COLLECTION),
+      where('contact_email', '==', email),
+      orderBy('created_at', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as Commission[];
+  } catch (error) {
+    console.error('Error fetching commissions by email:', error);
+    throw error;
+  }
+}
+
+/**
  * Get a single commission by ID
  */
 export async function getCommissionById(id: string): Promise<Commission | null> {

@@ -16,24 +16,10 @@ const CheckoutSuccessPage: React.FC = () => {
   // Record purchases and clear the cart when reaching the success page
   useEffect(() => {
     const savePurchases = async () => {
-      if (user && sessionId && items.length > 0) {
+      const customerEmail = user?.email || localStorage.getItem('customer_email');
+      if (customerEmail && sessionId && items.length > 0) {
         try {
-          // Record each item in the cart as a purchase
-          for (const item of items) {
-            await recordPurchase({
-              user_id: user.id,
-              product_id: item.id,
-              product_type: item.type,
-              product_title: item.title,
-              amount: item.price || 0,
-              quantity: item.quantity,
-              status: 'completed',
-              payment_id: sessionId,
-              metadata: {
-                variant: item.variant || 'standard'
-              }
-            });
-          }
+          await recordPurchase(items, customerEmail, sessionId, sessionId);
         } catch (error) {
           console.error('Failed to record purchases:', error);
         }
@@ -76,7 +62,7 @@ const CheckoutSuccessPage: React.FC = () => {
           {user && (
             <Button
               variant="link"
-              onClick={() => navigate('/customer/dashboard')}
+              onClick={() => navigate('/account/orders')}
             >
               View Your Purchases
             </Button>

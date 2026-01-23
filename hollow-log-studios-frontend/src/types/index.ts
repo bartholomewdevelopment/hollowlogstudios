@@ -157,10 +157,38 @@ export interface Commission {
   deadline: string;
   contact_email: string;
   contact_name: string | null;
+  contact_phone?: string | null;
+  contact_address_line1?: string | null;
+  contact_address_line2?: string | null;
+  contact_city?: string | null;
+  contact_state?: string | null;
+  contact_postal_code?: string | null;
+  contact_country?: string | null;
+  contact_preferred_method?: string | null;
+  contact_best_time?: string | null;
   status: 'Not Started' | 'In Progress' | 'Review' | 'Completed' | 'Cancelled';
   payment_status: 'Unpaid' | 'Partial' | 'Paid';
   total_price: number;
   amount_paid: number;
+  created_at: Timestamp | string;
+  updated_at: Timestamp | string;
+}
+
+export interface CustomerAddress {
+  id: string;
+  user_id: string;
+  label?: string | null;
+  recipient_name?: string | null;
+  phone?: string | null;
+  line1: string;
+  line2?: string | null;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+  is_default?: boolean;
+  source?: 'manual' | 'commission';
+  commission_id?: string | null;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }

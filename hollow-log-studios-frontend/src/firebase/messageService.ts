@@ -56,9 +56,9 @@ export async function getCommissionMessages(commissionId: string): Promise<Messa
  */
 export async function sendMessage(
   commissionId: string,
-  senderId: string,
   content: string,
-  attachmentFiles?: File[]
+  attachmentFiles?: File[],
+  senderId = 'customer'
 ): Promise<Message> {
   try {
     // Create the message

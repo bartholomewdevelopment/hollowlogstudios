@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/utils';
+import { formatDate } from '@/utils/formatDate';
 
 interface Purchase {
   id: string;
@@ -31,16 +32,6 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   onClose
 }) => {
   if (!purchase) return null;
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   const shippingInfo = purchase.metadata?.shipping_details;
   const customerInfo = purchase.metadata?.customer_details;

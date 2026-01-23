@@ -40,6 +40,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/account" className="text-slate-300 hover:text-white transition-colors">
+                  Account
+                </Link>
+              </li>
+              <li>
                 <Link to="/admin/login" className="text-slate-300 hover:text-white transition-colors font-semibold">
                   Admin Portal
                 </Link>

@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { getAllCommissions } from '@/firebase/commissionService';
-import { getCommissionMessages, createMessage, markMessagesAsRead, sendMessage } from '@/firebase/messageService';
+import { getCommissionMessages, markMessagesAsRead, sendMessage } from '@/firebase/messageService';
 import type { Message, Commission } from '@/types/customer-portal';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import MessageAttachment from '@/components/MessageAttachment';
 import { Paperclip } from 'lucide-react';
+import { formatDate } from '@/utils/formatDate';
 
 interface AdminMessagesProps {
   commissionId?: string;
@@ -73,7 +74,7 @@ const AdminMessages: React.FC<AdminMessagesProps> = ({
       const unreadMessages = data.filter(m => !m.is_read);
       if (unreadMessages.length > 0) {
         const unreadIds = unreadMessages.map(m => m.id);
-        await markMessagesAsRead(unreadIds);
+        await markMessagesAsRead(commissionId, unreadIds);
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -109,11 +110,12 @@ const AdminMessages: React.FC<AdminMessagesProps> = ({
       setSendingReply(true);
       
       // Use sendMessage which handles file attachments
-      if (files.length > 0) {
-        await sendMessage(selectedCommission, replyContent, files);
-      } else {
-        await createMessage(selectedCommission, replyContent);
-      }
+      await sendMessage(
+        selectedCommission,
+        replyContent,
+        files.length > 0 ? files : undefined,
+        'admin'
+      );
       
       setReplyContent('');
       setFiles([]);
@@ -187,7 +189,7 @@ const AdminMessages: React.FC<AdminMessagesProps> = ({
                         {isAdmin ? 'You (Admin)' : message.sender?.first_name || 'Customer'}
                       </span>
                       <span className="text-gray-500">
-                        {new Date(message.created_at).toLocaleString()}
+                        {formatDate(message.created_at)}
                       </span>
                     </div>
                     <p className="mt-1">{message.content}</p>

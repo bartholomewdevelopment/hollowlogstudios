@@ -32,7 +32,12 @@ const MessageForm: React.FC<MessageFormProps> = ({ commissionId, onMessageSent }
     try {
       setSending(true);
       // Pass the commissionId directly without any casting
-      await sendMessage(commissionId, content, files.length > 0 ? files : undefined);
+      await sendMessage(
+        commissionId,
+        content,
+        files.length > 0 ? files : undefined,
+        'customer'
+      );
       
       setContent('');
       setFiles([]);

@@ -7,6 +7,7 @@ import { Eye } from 'lucide-react';
 import { getAllPurchases } from '@/firebase/purchaseService';
 import { formatCurrency } from '@/lib/utils';
 import { OrderDetailModal } from './OrderDetailModal';
+import { formatDate } from '@/utils/formatDate';
 
 interface Purchase {
   id: string;
@@ -47,16 +48,6 @@ export const OrderHistoryList: React.FC = () => {
 
     fetchPurchases();
   }, []);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   const handleViewOrder = (purchase: Purchase) => {
     setSelectedPurchase(purchase);

@@ -54,12 +54,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ open, onOpenChange }) => {
       
       onOpenChange(false);
       toggleCart();
-      
-      if (checkoutUrl.startsWith('/')) {
-        navigate(checkoutUrl);
-        clearCart();
-      } else {
+
+      // Redirect to Stripe checkout
+      if (checkoutUrl) {
         window.location.href = checkoutUrl;
+      } else {
+        throw new Error('No checkout URL returned');
       }
     } catch (error) {
       console.error('Checkout error:', error);

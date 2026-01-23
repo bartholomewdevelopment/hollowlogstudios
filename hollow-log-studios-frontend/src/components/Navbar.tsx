@@ -25,6 +25,7 @@ const Navbar: React.FC = () => {
           <Link to="/pebblewick" className="hover:text-green-200 transition-colors">Pebblewick</Link>
           <Link to="/cryptids" className="hover:text-green-200 transition-colors">Cryptids</Link>
           <Link to="/about" className="hover:text-green-200 transition-colors">About</Link>
+          <Link to="/account" className="hover:text-green-200 transition-colors">Account</Link>
           <SignupButton />
         </div>
         
@@ -51,6 +52,7 @@ const Navbar: React.FC = () => {
             <Link to="/pebblewick" className="hover:text-green-200 transition-colors">Pebblewick</Link>
             <Link to="/cryptids" className="hover:text-green-200 transition-colors">Cryptids</Link>
             <Link to="/about" className="hover:text-green-200 transition-colors">About</Link>
+            <Link to="/account" className="hover:text-green-200 transition-colors">Account</Link>
 
             <div className="pt-2 border-t border-green-700">
               <SignupButton />

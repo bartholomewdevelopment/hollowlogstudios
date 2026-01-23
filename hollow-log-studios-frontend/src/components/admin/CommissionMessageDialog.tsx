@@ -8,6 +8,7 @@ import MessageAttachment from '@/components/MessageAttachment';
 import type { Message } from '@/types/customer-portal';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { formatDate } from '@/utils/formatDate';
 
 interface CommissionMessageDialogProps {
   open: boolean;
@@ -98,7 +99,12 @@ const CommissionMessageDialog: React.FC<CommissionMessageDialogProps> = ({
     try {
       setSendingReply(true);
       // Pass commissionId directly without casting
-      await sendMessage(commissionId, replyContent, files);
+      await sendMessage(
+        commissionId,
+        replyContent,
+        files.length > 0 ? files : undefined,
+        'admin'
+      );
       
       setReplyContent('');
       setFiles([]);
@@ -150,7 +156,7 @@ const CommissionMessageDialog: React.FC<CommissionMessageDialogProps> = ({
                         {isAdmin ? 'You (Admin)' : message.sender?.first_name || 'Customer'}
                       </span>
                       <span className="text-gray-500">
-                        {new Date(message.created_at).toLocaleString()}
+                        {formatDate(message.created_at)}
                       </span>
                     </div>
                     <p className="mt-1">{message.content}</p>

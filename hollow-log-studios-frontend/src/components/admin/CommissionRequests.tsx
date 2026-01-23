@@ -8,6 +8,7 @@ import { getAllCommissions, updateCommissionStatus } from '@/firebase/commission
 import { Commission } from '@/types/customer-portal';
 import { useToast } from '@/hooks/use-toast';
 import CommissionDetail from './CommissionDetail';
+import { formatDate } from '@/utils/formatDate';
 
 interface CommissionRequestsProps {
   refreshTrigger?: number;
@@ -116,7 +117,7 @@ const CommissionRequests: React.FC<CommissionRequestsProps> = ({
                       {commission.contact_name && <div className="text-xs">{commission.contact_name}</div>}
                     </TableCell>
                     <TableCell>{getStatusBadge(commission.status)}</TableCell>
-                    <TableCell>{new Date(commission.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell>{formatDate(commission.created_at, { dateStyle: 'short' })}</TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
                         <Button 

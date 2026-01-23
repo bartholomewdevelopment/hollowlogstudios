@@ -6,7 +6,10 @@ import {
   logout as logoutUser,
   resetPassword as resetUserPassword,
   getCurrentUser,
-  onAuthChange
+  onAuthChange,
+  sendMagicLink as sendMagicLinkRequest,
+  signInWithMagicLink as signInWithMagicLinkRequest,
+  isMagicLink as isMagicLinkRequest
 } from '@/firebase/authService';
 
 interface AuthContextType {
@@ -18,6 +21,9 @@ interface AuthContextType {
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   refreshUser: () => Promise<User | null>;
+  sendMagicLink: (email: string, redirectUrl: string) => Promise<void>;
+  signInWithMagicLink: (email: string, link: string) => Promise<User | null>;
+  isMagicLink: (link: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -119,6 +125,36 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const sendMagicLink = async (email: string, redirectUrl: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const { error } = await sendMagicLinkRequest(email, redirectUrl);
+      if (error) throw error;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signInWithMagicLink = async (email: string, link: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const { user, error } = await signInWithMagicLinkRequest(email, link);
+      if (error) throw error;
+      setUser(user);
+      return user;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const resetPassword = async (email: string) => {
     try {
       setLoading(true);
@@ -144,6 +180,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         logout,
         resetPassword,
         refreshUser,
+        sendMagicLink,
+        signInWithMagicLink,
+        isMagicLink: isMagicLinkRequest,
       }}
     >
       {children}

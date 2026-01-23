@@ -7,6 +7,10 @@ const SHIPPING_COST = 4.95;
 // Initialize Stripe - you'll need to add your publishable key to .env
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
+// Cloud Function URL - update this after deploying functions
+const FUNCTIONS_BASE_URL = import.meta.env.VITE_FUNCTIONS_URL ||
+  'https://us-central1-hollow-log-studios-new.cloudfunctions.net';
+
 export interface CheckoutSessionData {
   items: CartItem[];
   customerEmail?: string;
@@ -16,34 +20,50 @@ export interface CheckoutSessionData {
 }
 
 /**
- * Create a Stripe Checkout session
- * Note: For a full implementation, you'd need a backend/Cloud Function
- * This is a simplified version that records the purchase intent
+ * Create a Stripe Checkout session via Cloud Function
  */
-export async function createCheckoutSession(data: CheckoutSessionData): Promise<string | null> {
+export async function createCheckoutSession(items: CartItem[], collectAddress = true): Promise<string> {
   try {
     const stripe = await stripePromise;
     if (!stripe) {
       throw new Error('Stripe not initialized. Add VITE_STRIPE_PUBLISHABLE_KEY to your .env file.');
     }
 
-    // Calculate totals
-    const subtotal = data.items.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
-    const total = subtotal + SHIPPING_COST;
-
-    // For now, we'll use Stripe Payment Links or redirect to a checkout page
-    // In production, you'd create a checkout session via a Cloud Function
-    console.log('Checkout requested for:', {
-      items: data.items,
-      subtotal,
-      shipping: SHIPPING_COST,
-      total,
-      email: data.customerEmail
+    // Call the Cloud Function to create a checkout session
+    const response = await fetch(`${FUNCTIONS_BASE_URL}/createCheckoutSession`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        items: items.map(item => ({
+          id: item.id,
+          type: item.type,
+          title: item.title,
+          description: item.description,
+          price: item.price,
+          quantity: item.quantity,
+          image_url: item.image_url,
+          size: item.size,
+          color: item.color,
+        })),
+        successUrl: `${window.location.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/checkout/canceled`,
+      }),
     });
 
-    // Return null to indicate manual handling is needed
-    // You can integrate with Stripe Payment Links here
-    return null;
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Checkout failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.url) {
+      throw new Error('No checkout URL returned');
+    }
+
+    return data.url;
   } catch (error) {
     console.error('Error creating checkout session:', error);
     throw error;

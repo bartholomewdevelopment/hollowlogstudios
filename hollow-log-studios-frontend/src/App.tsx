@@ -10,6 +10,7 @@ import AboutPage from '@/pages/AboutPage';
 import CommissionsPage from '@/pages/CommissionsPage';
 import NotFound from '@/pages/NotFound';
 import AdminRoutes from '@/pages/admin/AdminRoutes';
+import AccountRoutes from '@/pages/account/AccountRoutes';
 
 import ShoppingCart from '@/components/ShoppingCart';
 import CheckoutSuccessPage from '@/pages/checkout/CheckoutSuccessPage';
@@ -32,6 +33,7 @@ function App() {
               <Route path="/pebblewick" element={<PebblewickPage />} />
               <Route path="/cryptids" element={<CryptidsPage />} />
               <Route path="/admin/*" element={<AdminRoutes />} />
+              <Route path="/account/*" element={<AccountRoutes />} />
 
               {/* Book detail page */}
               <Route path="/book/:id" element={<BookDetailPage />} />

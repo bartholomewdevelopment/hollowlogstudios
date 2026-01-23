@@ -45,17 +45,21 @@ const StripeCheckoutButton: React.FC<StripeCheckoutButtonProps> = ({
       if (productId && productType && productTitle && price && price > 0) {
         const singleItem = [{
           id: productId,
-          type: productType as 'painting' | 'book',
+          type: productType as 'painting' | 'book' | 'merchandise',
           title: productTitle,
           description: productDescription || productTitle,
           price,
           quantity,
           image_url: ''
         }];
-        
+
         console.log('Single item checkout:', singleItem);
-        const checkoutUrl = await createCheckoutSession(singleItem);
-        window.location.href = checkoutUrl;
+        const checkoutUrl = await createCheckoutSession(singleItem, true);
+        if (checkoutUrl) {
+          window.location.href = checkoutUrl;
+        } else {
+          throw new Error('No checkout URL returned');
+        }
         return;
       } 
       
@@ -89,15 +93,19 @@ const StripeCheckoutButton: React.FC<StripeCheckoutButtonProps> = ({
       }
       
       console.log('Cart checkout:', validCartItems);
-      const checkoutUrl = await createCheckoutSession(validCartItems);
-      
+      const checkoutUrl = await createCheckoutSession(validCartItems, true);
+
       // Mark cart as converted
       const cartSessionId = localStorage.getItem('cart_session_id');
       if (cartSessionId) {
         await markCartAsConverted(cartSessionId);
       }
-      
-      window.location.href = checkoutUrl;
+
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
     } catch (error) {
       console.error('Checkout error:', error);
       toast({
