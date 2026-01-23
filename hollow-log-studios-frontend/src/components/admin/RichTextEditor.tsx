@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bold, Italic, Underline, List, ListOrdered } from 'lucide-react';
 
@@ -12,6 +12,15 @@ interface RichTextEditorProps {
 export function RichTextEditor({ value = '', onChange, placeholder, className }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    if (!isFocused && editor.innerHTML !== value) {
+      editor.innerHTML = value;
+    }
+  }, [isFocused, value]);
 
   const execCommand = useCallback((command: string, value?: string) => {
     document.execCommand(command, false, value);
@@ -84,12 +93,12 @@ export function RichTextEditor({ value = '', onChange, placeholder, className }:
       <div
         ref={editorRef}
         contentEditable
+        suppressContentEditableWarning
         className="p-3 min-h-32 focus:outline-none"
         onInput={handleInput}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onPaste={handlePaste}
-        dangerouslySetInnerHTML={{ __html: value }}
         data-placeholder={placeholder}
         style={{
           minHeight: '8rem',

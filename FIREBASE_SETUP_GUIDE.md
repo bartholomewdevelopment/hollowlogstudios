@@ -120,10 +120,39 @@ service cloud.firestore {
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow anyone to read images (for gallery)
+    // Allow anyone to read images (for gallery/shop),
+    // only authenticated admins can write.
     match /artworks/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;  // Only authenticated admins
+      allow write: if request.auth != null;
+    }
+    match /books/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /paintings/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /murals/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /merchandise/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /characters/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /artist_profile/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /commissions/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
     }
   }
 }

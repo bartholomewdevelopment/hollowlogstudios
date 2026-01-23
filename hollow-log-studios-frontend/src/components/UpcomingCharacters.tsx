@@ -87,61 +87,92 @@ const UpcomingCharacters: React.FC = () => {
         </div>
       </div>
 
+      {/* Premium Whimsical Modal */}
       {selectedArt && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8"
           onClick={() => setSelectedArt(null)}
         >
-          <div 
-            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/60 via-purple-900/60 to-pink-900/60 backdrop-blur-sm" />
+
+          <div
+            className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-3xl bg-gradient-to-br from-white via-blue-50/50 to-pink-50/50 shadow-2xl animate-in fade-in zoom-in-95 duration-300"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
-              <h2 className="text-2xl griffy-text">{selectedArt.title}</h2>
-              <Button variant="ghost" size="sm" onClick={() => setSelectedArt(null)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            <div className="p-6 space-y-4">
-              <div className="text-center">
-                <img 
-                  src={selectedArt.image} 
-                  alt={selectedArt.title}
-                  className="max-w-full h-auto rounded-lg mx-auto"
-                />
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" />
+
+            <button
+              onClick={() => setSelectedArt(null)}
+              className="absolute top-5 right-5 z-10 p-2.5 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 group"
+            >
+              <X className="h-5 w-5 text-gray-600 group-hover:text-gray-900 transition-colors" />
+            </button>
+
+            <div className="flex flex-col lg:flex-row max-h-[90vh]">
+              <div className="lg:w-1/2 bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 p-6 lg:p-8 flex items-center justify-center relative overflow-hidden">
+                <div className="absolute top-10 left-10 w-20 h-20 rounded-full bg-blue-200/40 blur-xl" />
+                <div className="absolute bottom-10 right-10 w-32 h-32 rounded-full bg-pink-200/40 blur-xl" />
+                <div className="relative group">
+                  <div className="absolute -inset-2 bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-500" />
+                  <img
+                    src={selectedArt.image}
+                    alt={selectedArt.title}
+                    className="relative max-h-[50vh] lg:max-h-[70vh] w-auto object-contain rounded-xl shadow-xl"
+                  />
+                </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="text-center">
-                  <h3 className="text-xl font-semibold griffy-text mb-2">Bio</h3>
-                  <p className="text-gray-700">{selectedArt.description}</p>
-                </div>
-                
-                {selectedArt.notes && (
-                  <div className="bg-yellow-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-gray-800 mb-2">Artist's Notes:</h4>
-                    <p className="text-gray-700 italic">{selectedArt.notes}</p>
+              <div className="lg:w-1/2 overflow-y-auto">
+                <div className="p-6 lg:p-8 space-y-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-amber-500">
+                      <span className="text-lg">🎨</span>
+                      <span className="text-sm font-medium tracking-wide uppercase">Coming Soon</span>
+                    </div>
+                    <h2 className="text-3xl lg:text-4xl font-bold griffy-text bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                      {selectedArt.title}
+                    </h2>
                   </div>
-                )}
 
-                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={() => window.open('https://www.youtube.com/@Hollowlogstudios', '_blank')}
-                  >
-                    <Youtube className="mr-2 h-4 w-4" />
-                    Watch Videos
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={() => window.open('https://hollowlogstudios.printful.me/', '_blank')}
-                  >
-                    <ShoppingBag className="mr-2 h-4 w-4" />
-                    Pebblewick Merch
-                  </Button>
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                      <span className="w-8 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full" />
+                      Their Story
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {selectedArt.description}
+                    </p>
+                  </div>
+
+                  {selectedArt.notes && (
+                    <div className="p-5 rounded-xl bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-100 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-16 h-16 bg-amber-200/30 rounded-full blur-xl" />
+                      <div className="relative">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                          <h4 className="font-semibold text-amber-800 text-sm uppercase tracking-wide">From the Artist</h4>
+                        </div>
+                        <p className="text-amber-900/80 italic leading-relaxed">"{selectedArt.notes}"</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button
+                      onClick={() => window.open('https://www.youtube.com/@Hollowlogstudios', '_blank')}
+                      className="flex-1 flex items-center justify-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-xl font-medium shadow-lg shadow-red-500/25 hover:shadow-xl hover:from-red-600 hover:to-rose-600 transition-all duration-200"
+                    >
+                      <Youtube className="h-5 w-5" />
+                      Watch Stories
+                    </button>
+                    <button
+                      onClick={() => window.open('https://hollowlogstudios.printful.me/', '_blank')}
+                      className="flex-1 flex items-center justify-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-medium shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:from-emerald-600 hover:to-teal-600 transition-all duration-200"
+                    >
+                      <ShoppingBag className="h-5 w-5" />
+                      Shop Merch
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

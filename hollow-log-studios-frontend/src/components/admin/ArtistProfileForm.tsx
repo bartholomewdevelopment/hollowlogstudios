@@ -61,15 +61,17 @@ export function ArtistProfileForm() {
   }, [form, toast]);
 
   const onSubmit = async (data: FormValues) => {
-    if (!profile) return;
-    
     try {
       setIsLoading(true);
-      await updateArtistProfile({
-        id: profile.id,
+      const updatedProfile = await updateArtistProfile({
+        ...(profile ? { id: profile.id } : {}),
         ...data,
       });
-      
+
+      if (updatedProfile) {
+        setProfile(updatedProfile);
+      }
+
       toast({
         title: 'Success',
         description: 'Artist profile updated successfully',
