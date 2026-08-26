@@ -26,6 +26,7 @@ const formSchema = z.object({
   publisher_in_stock: z.boolean().default(false),
   website_cart_available: z.boolean().default(true),
   autograph_available: z.boolean().default(true),
+  pre_order: z.boolean().default(false),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -54,6 +55,7 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
       publisher_in_stock: book?.publisher_in_stock || false,
       website_cart_available: book?.website_cart_available ?? true,
       autograph_available: book?.autograph_available ?? true,
+      pre_order: book?.pre_order ?? false,
     },
   });
 
@@ -78,6 +80,7 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
         publisher_in_stock: data.publisher_in_stock,
         website_cart_available: data.website_cart_available,
         autograph_available: data.autograph_available,
+        pre_order: data.pre_order,
       };
       
       if (book) {
@@ -188,6 +191,28 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
                 <FormLabel>Available for Website Cart</FormLabel>
                 <p className="text-sm text-gray-500">
                   Allow customers to add this book to their cart
+                </p>
+              </div>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="pre_order"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Pre-Order</FormLabel>
+                <p className="text-sm text-gray-500">
+                  Not released yet. Adds a "Pre-Order" badge on the website and
+                  labels the item in the cart and at checkout.
                 </p>
               </div>
             </FormItem>

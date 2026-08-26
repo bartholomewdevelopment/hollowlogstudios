@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { CartItem as CartItemType } from '@/types';
 import { useCart } from '@/contexts/CartContext';
 import { Minus, Plus, X } from 'lucide-react';
+import PreOrderBadge from '@/components/PreOrderBadge';
 
 interface CartItemProps {
   item: CartItemType;
@@ -10,9 +11,9 @@ interface CartItemProps {
 
 const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const { updateQuantity, removeFromCart } = useCart();
-  const { id, title, price, image_url, quantity, variant, size, color } = item;
+  const { id, title, price, image_url, quantity, variant, size, color, pre_order } = item;
   
-  const formattedPrice = price ? `$${price}` : 'Price on request';
+  const formattedPrice = price ? `$${price.toFixed(2)}` : 'Price on request';
   const itemTotal = price ? `$${(price * quantity).toFixed(2)}` : 'N/A';
 
   // Create a unique key for items with size/color variants
@@ -27,8 +28,8 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const variantKey = getVariantKey();
 
   return (
-    <div className="flex py-4 border-b border-gray-200 last:border-0">
-      <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+    <div className="flex py-4">
+      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-white">
         <img
           src={image_url}
           alt={title}
@@ -41,7 +42,10 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
           <h3 className="line-clamp-1">{title}</h3>
           <p className="ml-4">{itemTotal}</p>
         </div>
-        <p className="mt-1 text-sm text-gray-500">{formattedPrice} each</p>
+        <div className="mt-1 flex items-center gap-2">
+          <p className="text-sm text-gray-500">{formattedPrice} each</p>
+          {pre_order && <PreOrderBadge />}
+        </div>
         
         {/* Display variant information */}
         {(variant || size || color) && (

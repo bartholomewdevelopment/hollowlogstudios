@@ -39,111 +39,106 @@ const ShoppingCart: React.FC = () => {
 
   return (
     <Sheet open={cartOpen} onOpenChange={toggleCart}>
-      <SheetContent className="w-full sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle className="flex items-center">
-            <ShoppingBag className="mr-2 h-5 w-5" />
-            Shopping Cart ({totalItems})
+      <SheetContent className="flex h-full w-full flex-col gap-0 p-0 sm:max-w-md">
+        <SheetHeader className="shrink-0 space-y-0 border-b border-gray-200 px-6 py-4 text-left">
+          <SheetTitle className="flex items-center gap-2 pr-8 text-lg">
+            <ShoppingBag className="h-5 w-5 text-[#238830]" />
+            Shopping Cart
+            {totalItems > 0 && (
+              <span className="rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+                {totalItems}
+              </span>
+            )}
           </SheetTitle>
         </SheetHeader>
-        
+
         {cartItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-[70vh]">
-            <ShoppingBag className="h-16 w-16 text-gray-300 mb-4" />
-            <p className="text-gray-500 text-center">Your cart is empty</p>
-            <Button 
-              variant="outline" 
-              className="mt-4" 
-              onClick={toggleCart}
-            >
+          <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+            <div className="mb-4 rounded-full bg-gray-50 p-5">
+              <ShoppingBag className="h-10 w-10 text-gray-300" />
+            </div>
+            <p className="font-medium text-gray-700">Your cart is empty</p>
+            <p className="mt-1 text-sm text-gray-500">
+              Browse the gallery and add something you love.
+            </p>
+            <Button variant="outline" className="mt-6" onClick={toggleCart}>
               Continue Shopping
             </Button>
           </div>
         ) : (
-          <div className="mt-6 flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto">
-              <div className="flow-root">
-                <ul className="-my-6 divide-y divide-gray-200">
-                  {cartItems.map((item) => (
-                    <li key={`${item.type}-${item.id}`} className="py-2">
-                      <CartItem item={item} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <>
+            {/* Items — the only scrolling region */}
+            <div className="flex-1 overflow-y-auto px-6">
+              <ul className="divide-y divide-gray-100">
+                {cartItems.map((item) => (
+                  <li key={`${item.type}-${item.id}`}>
+                    <CartItem item={item} />
+                  </li>
+                ))}
+              </ul>
             </div>
-            
-            <div className="border-t border-gray-200 py-4 mt-auto">
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-base text-gray-900">
-                  <p>Subtotal</p>
-                  <p>${totalPrice.toFixed(2)}</p>
+
+            {/* Summary — pinned below the list */}
+            <div className="shrink-0 space-y-4 border-t border-gray-200 bg-gray-50/60 px-6 py-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Subtotal</span>
+                  <span className="font-medium text-gray-900">${totalPrice.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-base text-gray-900">
-                  <div className="flex items-center">
-                    <Truck className="mr-2 h-4 w-4" />
-                    <p>Shipping</p>
-                  </div>
-                  <p>${shippingCost.toFixed(2)}</p>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span className="flex items-center gap-1.5">
+                    <Truck className="h-4 w-4" />
+                    Shipping
+                  </span>
+                  <span className="font-medium text-gray-900">${shippingCost.toFixed(2)}</span>
                 </div>
+                <p className="text-xs text-gray-400">
+                  From $4.95, based on how many items you order
+                </p>
                 <Separator />
-                <div className="flex justify-between text-lg font-semibold text-gray-900">
-                  <p>Total</p>
-                  <p>${grandTotal.toFixed(2)}</p>
-                </div>
-              </div>
-              
-              <div className="bg-blue-50 p-3 rounded-lg mb-4">
-                <div className="flex items-center">
-                  <Truck className="mr-2 h-4 w-4 text-blue-600" />
-                  <p className="text-sm text-blue-800">
-                    <strong>Shipping:</strong> from $4.95, based on how many items you order
-                  </p>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-base font-semibold text-gray-900">Total</span>
+                  <span className="text-xl font-bold text-[#238830]">${grandTotal.toFixed(2)}</span>
                 </div>
               </div>
 
               {/* Email status */}
               {customerEmail ? (
-                <div className="bg-green-50 p-3 rounded-lg mb-4">
-                  <div className="flex items-center">
-                    <Check className="mr-2 h-4 w-4 text-green-600" />
-                    <p className="text-sm text-green-800">
-                      Updates will be sent to <strong>{customerEmail}</strong>
-                    </p>
-                  </div>
+                <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2">
+                  <Check className="h-4 w-4 shrink-0 text-green-600" />
+                  <p className="truncate text-sm text-green-800">
+                    Updates go to <strong>{customerEmail}</strong>
+                  </p>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowEmailCapture(true)}
-                  className="w-full bg-gray-50 hover:bg-gray-100 p-3 rounded-lg mb-4 text-left transition-colors"
+                  className="flex w-full items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-left transition-colors hover:border-gray-300 hover:bg-gray-50"
                 >
-                  <div className="flex items-center">
-                    <Mail className="mr-2 h-4 w-4 text-gray-500" />
-                    <p className="text-sm text-gray-600">
-                      <strong>Add email</strong> for order updates
-                    </p>
-                  </div>
+                  <Mail className="h-4 w-4 shrink-0 text-gray-400" />
+                  <p className="text-sm text-gray-600">
+                    <strong className="font-medium text-gray-800">Add email</strong> for order updates
+                  </p>
                 </button>
               )}
-              
-              <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg mb-2">
-                <p className="text-xs text-amber-800 leading-snug">
-                  <strong>Heads up:</strong> Your card statement and Stripe checkout screen could show a charge from either <strong>Bartholomew Development</strong> or <strong>Hollow Log Studios</strong> — both are us! Don't worry, your order is safe.
-                </p>
-              </div>
 
-              <div className="flex flex-col gap-2">
-                <CheckoutButton />
-                <Button 
-                  variant="outline" 
+              <p className="text-xs leading-relaxed text-gray-500">
+                Your card statement may show <strong className="font-medium text-gray-700">Bartholomew Development</strong>{' '}
+                or <strong className="font-medium text-gray-700">Hollow Log Studios</strong> — both are us.
+              </p>
+
+              <div className="space-y-2">
+                <CheckoutButton className="h-11 w-full text-base" />
+                <Button
+                  variant="ghost"
                   onClick={clearCart}
-                  className="border-red-500 text-red-500 hover:bg-red-50"
+                  className="h-9 w-full text-sm text-gray-500 hover:bg-red-50 hover:text-red-600"
                 >
-                  Clear Cart
+                  Clear cart
                 </Button>
               </div>
             </div>
-          </div>
+          </>
         )}
       </SheetContent>
 

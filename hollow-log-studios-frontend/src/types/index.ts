@@ -26,6 +26,8 @@ export interface Book {
   website_cart_available: boolean;
   /** Optional: books saved before this flag existed are treated as true. */
   autograph_available?: boolean;
+  /** Not yet released — shown as a pre-order on the storefront and in the cart. */
+  pre_order?: boolean;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }
@@ -105,6 +107,8 @@ export interface CartItem {
   variant?: string;
   size?: string;
   color?: string;
+  /** Carried from the book so the cart can flag pre-ordered items. */
+  pre_order?: boolean;
 }
 
 export interface User {

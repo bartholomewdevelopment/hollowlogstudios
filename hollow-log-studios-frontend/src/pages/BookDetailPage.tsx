@@ -7,6 +7,7 @@ import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import AppLayout from '@/components/AppLayout';
 import { autographedPrice, canAutograph } from '@/lib/bookPricing';
+import PreOrderBadge from '@/components/PreOrderBadge';
 
 const BookDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -52,7 +53,8 @@ const BookDetailPage: React.FC = () => {
       title: offersAutograph ? `${book.title} (Autographed)` : book.title,
       price: offersAutograph ? autographedPrice(book.price) : book.price,
       image_url: book.image_url,
-      type: 'book'
+      type: 'book',
+      pre_order: book.pre_order
     });
   };
 
@@ -93,7 +95,10 @@ const BookDetailPage: React.FC = () => {
               />
             </div>
             <div className="space-y-6">
-              <h1 className="text-3xl font-bold text-gray-800">{book.title}</h1>
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-3xl font-bold text-gray-800">{book.title}</h1>
+                {book.pre_order && <PreOrderBadge />}
+              </div>
               
               {book.description && (
                 <div className="prose max-w-none">
@@ -118,7 +123,7 @@ const BookDetailPage: React.FC = () => {
                     onClick={handleAddToCart}
                   >
                     <ShoppingCart className="h-5 w-5" />
-                    Add to Cart
+                    {book.pre_order ? 'Pre-Order Now' : 'Add to Cart'}
                   </Button>
                 )}
               </div>

@@ -4,6 +4,7 @@ import { Book } from '@/types';
 import { Eye, ShoppingCart, Brush } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { autographedPrice, canAutograph } from '@/lib/bookPricing';
+import PreOrderBadge from '@/components/PreOrderBadge';
 import { useNavigate } from 'react-router-dom';
 import { fetchPaintings } from '@/firebase/galleryService';
 import { fetchBooks } from '@/firebase/bookService';
@@ -161,6 +162,7 @@ const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
       price: signed ? autographedPrice(featuredBook.price) : featuredBook.price,
       image_url: featuredBook.image_url,
       type: 'book',
+      pre_order: featuredBook.pre_order,
     });
   };
 
@@ -238,6 +240,7 @@ const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
                     <h2 className="text-xl font-bold font-griffy text-green-800 mb-2">
                       {featuredBook.title}
                     </h2>
+                    {featuredBook.pre_order && <PreOrderBadge className="mb-2" />}
                     {featuredBook.description && (
                       <p className="text-gray-500 text-sm mb-5 line-clamp-3 leading-relaxed">
                         {featuredBook.description}

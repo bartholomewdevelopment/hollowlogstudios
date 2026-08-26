@@ -4,6 +4,7 @@ import { ExternalLink, ShoppingCart, Truck } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { Book } from '@/types';
 import { autographedPrice, canAutograph } from '@/lib/bookPricing';
+import PreOrderBadge from '@/components/PreOrderBadge';
 
 interface BookPurchaseOptionsProps {
   book: Book;
@@ -21,7 +22,8 @@ const BookPurchaseOptions: React.FC<BookPurchaseOptionsProps> = ({ book }) => {
       title: `${book.title} (Autographed)`,
       price: signedPrice,
       image_url: book.image_url,
-      type: 'book'
+      type: 'book',
+      pre_order: book.pre_order
     });
   };
 
@@ -32,7 +34,8 @@ const BookPurchaseOptions: React.FC<BookPurchaseOptionsProps> = ({ book }) => {
       title: book.title,
       price: book.price,
       image_url: book.image_url,
-      type: 'book'
+      type: 'book',
+      pre_order: book.pre_order
     });
   };
 
@@ -115,6 +118,7 @@ const BookPurchaseOptions: React.FC<BookPurchaseOptionsProps> = ({ book }) => {
             <h4 className="font-semibold text-lg text-[#238830]">
               {offersAutograph ? 'Autographed Copy' : 'Buy from the Artist'}
             </h4>
+            {book.pre_order && <PreOrderBadge />}
             <p className="text-gray-600 text-sm">
               {offersAutograph
                 ? 'Get a personally signed copy by Bethany Bartholomew. Perfect for collectors or as a special gift.'
@@ -131,7 +135,7 @@ const BookPurchaseOptions: React.FC<BookPurchaseOptionsProps> = ({ book }) => {
                 className="w-full bg-[#238830] hover:bg-green-700 text-white flex items-center justify-center gap-2"
               >
                 <ShoppingCart className="h-4 w-4" />
-                Add to Cart
+                {book.pre_order ? 'Pre-Order Now' : 'Add to Cart'}
               </Button>
             )}
           </div>

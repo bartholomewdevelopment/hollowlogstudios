@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Book } from '@/types';
 import { Eye, Truck } from 'lucide-react';
+import PreOrderBadge from '@/components/PreOrderBadge';
 
 interface BookCardProps {
   book: Book;
@@ -46,7 +47,10 @@ const BookCard: React.FC<BookCardProps> = ({
       </div>
       <div className={`p-4 ${featured ? 'md:w-3/5 md:flex md:flex-col md:justify-center' : ''}`}>
         {featured && <div className="mb-2 text-[#238830] font-semibold">Featured Book</div>}
-        <h3 className="font-medium text-gray-800 group-hover:text-[#238830] transition-colors text-lg">{title}</h3>
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="font-medium text-gray-800 group-hover:text-[#238830] transition-colors text-lg">{title}</h3>
+          {book.pre_order && <PreOrderBadge className="mt-1 shrink-0" />}
+        </div>
         {description && (
           <p className="text-gray-600 my-2 line-clamp-3">
             {formatDescription(description)}
