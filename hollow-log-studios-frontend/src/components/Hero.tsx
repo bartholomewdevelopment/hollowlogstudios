@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Book } from '@/types';
 import { Eye, ShoppingCart, Brush } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import ArtShowcase, { ShowcaseItem } from '@/components/ArtShowcase';
 import { autographedPrice, canAutograph } from '@/lib/bookPricing';
 import PreOrderBadge from '@/components/PreOrderBadge';
 import { useNavigate } from 'react-router-dom';
@@ -12,13 +13,9 @@ import { getMurals } from '@/firebase/muralService';
 import { getAllCharacters } from '@/firebase/characterService';
 
 // ─── Each carousel item carries its destination route ────────────────────────
-interface CarouselItem {
-  url: string;
-  href: string;   // route to navigate to on click
-  label: string;  // accessible description
-}
+const MAX_SHOWCASE_ITEMS = 12;
 
-async function fetchAllArtImages(): Promise<CarouselItem[]> {
+async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
   const [paintings, books, murals, characters] = await Promise.allSettled([
     fetchPaintings(),
     fetchBooks(),
@@ -26,114 +23,38 @@ async function fetchAllArtImages(): Promise<CarouselItem[]> {
     getAllCharacters(),
   ]);
 
-  const items: CarouselItem[] = [];
+  // Deterministic order, strongest categories first. Randomising meant the
+  // site looked different on every visit, which is the opposite of what a
+  // portfolio wants.
+  const items: ShowcaseItem[] = [];
 
-  if (paintings.status === 'fulfilled') {
-    paintings.value.forEach(p => {
-      if (p.image_url) items.push({ url: p.image_url, href: '/gallery', label: p.title });
-    });
-  }
   if (books.status === 'fulfilled') {
     books.value.forEach(b => {
-      if (b.image_url) items.push({ url: b.image_url, href: `/book/${b.id}`, label: b.title });
+      if (b.image_url) items.push({ url: b.image_url, href: `/book/${b.id}`, label: b.title, kind: 'Book' });
+    });
+  }
+  if (paintings.status === 'fulfilled') {
+    paintings.value.forEach(p => {
+      if (p.image_url) items.push({ url: p.image_url, href: '/gallery', label: p.title, kind: 'Painting' });
     });
   }
   if (murals.status === 'fulfilled') {
     murals.value.forEach(m => {
-      if (m.image_url) items.push({ url: m.image_url, href: '/gallery', label: m.title ?? 'Mural' });
+      if (m.image_url) items.push({ url: m.image_url, href: '/gallery', label: m.title ?? 'Mural', kind: 'Mural' });
     });
   }
   if (characters.status === 'fulfilled') {
     characters.value.forEach(c => {
       if (c.image_url) {
         const href = c.character_type === 'cryptid' ? '/cryptids' : '/pebblewick';
-        items.push({ url: c.image_url, href, label: c.name });
+        items.push({ url: c.image_url, href, label: c.name, kind: 'Character' });
       }
     });
   }
 
-  return items.sort(() => Math.random() - 0.5);
+  // A showcase, not an archive — the full collection lives in the gallery.
+  return items.slice(0, MAX_SHOWCASE_ITEMS);
 }
-
-// ─── Infinite crossfade carousel ─────────────────────────────────────────────
-const INTERVAL_MS = 4000;
-const FADE_MS = 600;
-
-const ArtCarousel: React.FC<{ items: CarouselItem[] }> = ({ items }) => {
-  const [current, setCurrent] = useState(0);
-  const [visible, setVisible] = useState(true);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (items.length < 2) return;
-
-    timerRef.current = setTimeout(() => {
-      setVisible(false);
-      setTimeout(() => {
-        setCurrent(prev => (prev + 1) % items.length);
-        setVisible(true);
-      }, FADE_MS);
-    }, INTERVAL_MS);
-
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
-  }, [current, items.length]);
-
-  if (items.length === 0) return null;
-
-  const item = items[current];
-
-  return (
-    <div className="flex flex-col items-center">
-      <button
-        onClick={() => navigate(item.href)}
-        className="relative flex items-center justify-center w-full cursor-pointer group focus:outline-none"
-        style={{ minHeight: '220px' }}
-        aria-label={`View ${item.label}`}
-      >
-        <img
-          key={current}
-          src={item.url}
-          alt={item.label}
-          className="max-w-full rounded-xl shadow-lg group-hover:shadow-2xl transition-shadow duration-300"
-          style={{
-            maxHeight: '320px',
-            objectFit: 'contain',
-            opacity: visible ? 1 : 0,
-            transition: `opacity ${FADE_MS}ms ease-in-out`,
-          }}
-          loading="lazy"
-        />
-        {/* Subtle hover overlay with "View" label */}
-        <div
-          className="absolute inset-0 rounded-xl flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
-          style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 60%)' }}
-        >
-          <span className="text-white text-sm font-semibold tracking-wide drop-shadow">
-            View {item.label}
-          </span>
-        </div>
-      </button>
-
-      {/* Dot indicators */}
-      {items.length > 1 && (
-        <div className="flex justify-center gap-1.5 mt-3">
-          {items.map((_, i) => (
-            <span
-              key={i}
-              className="inline-block rounded-full transition-all duration-300"
-              style={{
-                width: i === current ? '16px' : '6px',
-                height: '6px',
-                background: i === current ? 'white' : 'rgba(255,255,255,0.4)',
-              }}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 interface HeroProps {
@@ -144,7 +65,7 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const [artItems, setArtItems] = useState<CarouselItem[]>([]);
+  const [artItems, setArtItems] = useState<ShowcaseItem[]>([]);
 
   useEffect(() => {
     fetchAllArtImages()
@@ -279,10 +200,10 @@ const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
 
         </div>
 
-        {/* ── Row 2: Full-width carousel ── */}
+        {/* ── Row 2: Selected work ── */}
         {artItems.length > 0 && (
           <div className="mt-8">
-            <ArtCarousel items={artItems} />
+            <ArtShowcase items={artItems} />
           </div>
         )}
 
