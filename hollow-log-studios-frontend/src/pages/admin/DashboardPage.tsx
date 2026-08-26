@@ -12,6 +12,8 @@ import AdminHeader from '@/components/admin/AdminHeader';
 import { OrderHistoryList } from '@/components/admin/OrderHistoryList';
 import { AbandonedCartsList } from '@/components/admin/AbandonedCartsList';
 import { CharacterList } from '@/components/admin/CharacterList';
+import { TestimonialList } from '@/components/admin/TestimonialList';
+import EventList from '@/components/admin/EventList';
 import { Painting, Book, Merchandise } from '@/types';
 import DataLoadingStatus from '@/components/DataLoadingStatus';
 import { fetchAllFromTable } from '@/firebase/dataFetcher';
@@ -136,6 +138,8 @@ const DashboardPage: React.FC = () => {
           <TabsTrigger value="commissions">Commissions</TabsTrigger>
           <TabsTrigger value="orders">Orders</TabsTrigger>
           <TabsTrigger value="carts">Abandoned Carts</TabsTrigger>
+          <TabsTrigger value="events">Events</TabsTrigger>
+          <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
           <TabsTrigger value="artist">Artist</TabsTrigger>
         </TabsList>
         
@@ -276,6 +280,34 @@ const DashboardPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <AbandonedCartsList />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="events" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Manage Events</CardTitle>
+              <CardDescription>
+                Add upcoming events shown on the homepage. Past events automatically move to the About page.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <EventList />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="testimonials" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Manage Testimonials</CardTitle>
+              <CardDescription>
+                Add, edit, or remove customer testimonials shown on the homepage.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TestimonialList />
             </CardContent>
           </Card>
         </TabsContent>

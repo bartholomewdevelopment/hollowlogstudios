@@ -228,3 +228,33 @@ export interface DashboardSummary {
   pending_contracts: number;
   unread_messages: number;
 }
+
+export interface SocialLink {
+  platform: string;
+  url: string;
+}
+
+export interface StudioEvent {
+  id: string;
+  name: string;
+  date: string;           // YYYY-MM-DD
+  time: string;           // e.g. "2:00 PM – 5:00 PM"
+  address: string;
+  description: string;
+  cost: string;           // "Free", "$10", etc.
+  social_links: SocialLink[];
+  pre_event_images: string[];
+  post_event_images: string[];
+  created_at: Timestamp | string;
+  updated_at: Timestamp | string;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  text: string;
+  stars: number;
+  type: string;
+  created_at: Timestamp | string;
+  updated_at: Timestamp | string;
+}

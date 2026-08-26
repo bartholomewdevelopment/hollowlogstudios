@@ -126,6 +126,12 @@ const ShoppingCart: React.FC = () => {
                 </button>
               )}
               
+              <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg mb-2">
+                <p className="text-xs text-amber-800 leading-snug">
+                  <strong>Heads up:</strong> Your card statement and Stripe checkout screen could show a charge from either <strong>Bartholomew Development</strong> or <strong>Hollow Log Studios</strong> — both are us! Don't worry, your order is safe.
+                </p>
+              </div>
+
               <div className="flex flex-col gap-2">
                 <CheckoutButton />
                 <Button 

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
+import UpcomingEvents from '@/components/UpcomingEvents';
 import CurrentCharacters from '@/components/CurrentCharacters';
 import CurrentCryptids from '@/components/CurrentCryptids';
 import FeaturedArtwork from '@/components/FeaturedArtwork';
+import Testimonials from '@/components/Testimonials';
 import Footer from '@/components/Footer';
 import { getFeaturedBook } from '@/firebase/bookService';
 import { Book } from '@/types';
@@ -43,9 +45,11 @@ const HomePage: React.FC = () => {
         featuredBook={featuredBook}
         onViewBookDetails={featuredBook ? () => handleViewBookDetails(featuredBook) : undefined}
       />
+      <UpcomingEvents />
       <CurrentCharacters />
       <CurrentCryptids />
       <FeaturedArtwork />
+      <Testimonials />
       <Footer />
 
       {/* Book Detail Modal */}

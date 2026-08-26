@@ -84,6 +84,26 @@ const CommissionsPage: React.FC = () => {
             Bethany specializes in custom children's book illustrations, fantasy portraits, and indoor/outdoor murals.
             Fill out the form below to start your custom art journey.
           </p>
+
+          {/* Pricing tiers */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-2">
+            <div className="bg-white rounded-xl p-5 border border-green-200 text-center shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-widest text-green-700 mb-1">Illustration</p>
+              <p className="text-2xl font-bold text-gray-800">Starting at <span className="text-[#238830]">$75</span></p>
+              <p className="text-gray-500 text-sm mt-1">Character portraits, book pages, custom cards</p>
+            </div>
+            <div className="bg-white rounded-xl p-5 border border-green-200 text-center shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-widest text-green-700 mb-1">Portrait</p>
+              <p className="text-2xl font-bold text-gray-800">Starting at <span className="text-[#238830]">$150</span></p>
+              <p className="text-gray-500 text-sm mt-1">Family portraits, pet portraits, fantasy scenes</p>
+            </div>
+            <div className="bg-white rounded-xl p-5 border border-green-200 text-center shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-widest text-green-700 mb-1">Mural</p>
+              <p className="text-2xl font-bold text-gray-800">Starting at <span className="text-[#238830]">$500</span></p>
+              <p className="text-gray-500 text-sm mt-1">Indoor &amp; outdoor murals, nursery walls, businesses</p>
+            </div>
+          </div>
+          <p className="text-center text-xs text-gray-400 mb-4">Final pricing depends on size, complexity, and timeline. You'll receive a quote before any commitment.</p>
         </div>
       </div>
       <div className="container mx-auto px-4 py-8">

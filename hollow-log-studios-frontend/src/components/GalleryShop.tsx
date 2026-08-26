@@ -46,11 +46,11 @@ const ArtworkCard: React.FC<ArtworkCardProps> = ({
       case 'Original - Sold Out':
         return 'bg-red-100 text-red-800 hover:bg-red-200';
       case 'Print - For Sale':
-        return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
+        return 'bg-green-50 text-green-700 border border-green-300 hover:bg-green-100';
       case 'Custom Artwork':
-        return 'bg-purple-100 text-purple-800 hover:bg-purple-200';
+        return 'bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100';
       default:
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+        return 'bg-gray-100 text-gray-700 hover:bg-gray-200';
     }
   };
 
@@ -75,8 +75,13 @@ const ArtworkCard: React.FC<ArtworkCardProps> = ({
 
   return (
     <div className="group bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-all">
-      <div className="aspect-square overflow-hidden relative">
-        <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+      <div className="overflow-hidden relative bg-green-50">
+        <img
+          src={imageUrl}
+          alt={title}
+          className="w-full h-auto object-contain max-h-72"
+          loading="lazy"
+        />
       </div>
       <div className="p-4">
         <div className="mb-2 flex flex-wrap gap-1">
