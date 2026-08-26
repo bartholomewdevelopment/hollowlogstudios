@@ -18,5 +18,11 @@
     "predeploy": [
       "npm --prefix \"$RESOURCE_DIR\" install"
     ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
   }
 }

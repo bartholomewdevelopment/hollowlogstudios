@@ -70,36 +70,99 @@ const firebaseConfig = {
 
 ### Configure Security Rules
 
-1. Go to **Firestore Database** → **Rules** tab
-2. Replace the rules with:
+Firestore rules live in `hollow-log-studios-frontend/firestore.rules` and are deployed with:
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+Current rules:
 
 ```javascript
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow anyone to read artworks (for gallery)
-    match /artworks/{artwork} {
-      allow read: if true;
-      allow write: if request.auth != null;  // Only authenticated admins
+    // Users can read/write their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Allow anyone to create bookings
-    // Only authenticated admins can read/update/delete
-    match /bookings/{booking} {
-      allow create: if true;
-      allow read, update, delete: if request.auth != null;
+    // Public read access for content, admin write
+    match /paintings/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /books/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /merchandise/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /murals/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /characters/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /artist_profile/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /tags/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Events shown on the home page (upcoming) and About page (past)
+    match /events/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Customer testimonials shown on the home page
+    match /testimonials/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Commissions
+    match /commissions/{document=**} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /commission_files/{document=**} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Purchases and carts
+    match /purchases/{document=**} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /abandoned_carts/{document=**} {
+      allow read, write: if true;
     }
   }
 }
 ```
 
-3. Click **"Publish"**
-
 **What this does:**
-- Anyone can view artwork (public gallery)
-- Anyone can submit booking requests (contact form)
-- Only logged-in admins can add/edit/delete artwork
-- Only logged-in admins can view/manage bookings
+- Anyone can view public content: paintings, books, merchandise, murals,
+  characters, artist_profile, tags, events, and testimonials
+- Only logged-in admins can add/edit/delete that content
+- Commissions, commission_files and purchases are readable/writable only
+  when signed in
+- Each user can read/write only their own `users/{userId}` document
 
 ---
 
@@ -113,44 +176,22 @@ service cloud.firestore {
 
 ### Configure Storage Rules
 
-1. Go to **Storage** → **Rules** tab
-2. Replace the rules with:
+Storage rules live in `hollow-log-studios-frontend/storage.rules` and are deployed with:
+
+```bash
+firebase deploy --only storage
+```
+
+Current rules:
 
 ```javascript
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow anyone to read images (for gallery/shop),
-    // only authenticated admins can write.
-    match /artworks/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /books/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /paintings/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /murals/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /merchandise/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /characters/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /artist_profile/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /commissions/{allPaths=**} {
+    // Catch-all: public read, authenticated (admin) write.
+    // This already covers every upload path used by the admin dashboard,
+    // including events/pre and events/post for event images.
+    match /{allPaths=**} {
       allow read: if true;
       allow write: if request.auth != null;
     }
@@ -158,8 +199,11 @@ service firebase.storage {
 }
 ```
 
-3. Click **"Publish"**
+A single catch-all grants public read and authenticated-only write, so every
+admin upload path (paintings, books, murals, merchandise, characters,
+artist_profile, commissions, and events/pre + events/post) is already covered.
 
+---
 ---
 
 ## Step 6: Enable Authentication (5 minutes)
