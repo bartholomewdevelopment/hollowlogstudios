@@ -54,6 +54,12 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
+    // Artists listed as inspiration on the About page
+    match /influences/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
     // Commissions
     match /commissions/{document=**} {
       allow read, write: if request.auth != null;

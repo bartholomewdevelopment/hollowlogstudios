@@ -260,6 +260,15 @@ export interface StudioEvent {
   updated_at: Timestamp | string;
 }
 
+export interface Influence {
+  id: string;
+  name: string;
+  note: string;
+  image_url?: string | null;
+  created_at: Timestamp | string;
+  updated_at: Timestamp | string;
+}
+
 export interface Testimonial {
   id: string;
   name: string;

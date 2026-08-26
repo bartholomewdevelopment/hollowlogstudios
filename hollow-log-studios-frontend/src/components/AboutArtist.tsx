@@ -1,11 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { getArtistProfile } from '@/firebase/artistService';
+import { fetchBooks } from '@/firebase/bookService';
+import { getAllCharacters } from '@/firebase/characterService';
 import type { ArtistProfile } from '@/firebase/artistService';
 
 const AboutArtist: React.FC = () => {
   const [profile, setProfile] = useState<ArtistProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<{ books: number; characters: number; worlds: number } | null>(null);
+
+  useEffect(() => {
+    Promise.allSettled([fetchBooks(), getAllCharacters()]).then(([books, characters]) => {
+      const bookCount = books.status === 'fulfilled' ? books.value.length : 0;
+      const chars = characters.status === 'fulfilled' ? characters.value : [];
+      const worlds = new Set(
+        chars.map(c => (c.character_type === 'cryptid' ? 'cryptid' : 'pebblewick'))
+      ).size;
+      setStats({ books: bookCount, characters: chars.length, worlds });
+    });
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -40,6 +54,27 @@ const AboutArtist: React.FC = () => {
             Watercolor dreamscapes rooted in folklore, family, and the natural rhythm of rural Ohio.
           </p>
         </div>
+
+        {stats && (
+          <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {[
+              { value: String(stats.books), label: 'Picture books illustrated' },
+              { value: String(stats.worlds), label: 'Original worlds' },
+              { value: String(stats.characters), label: 'Characters created' },
+              { value: 'Watercolor', label: 'Medium' },
+            ].map(stat => (
+              <div
+                key={stat.label}
+                className="rounded-[18px] border border-[#e3dccf] bg-white/75 px-4 py-4 text-center shadow-[0_10px_26px_rgba(64,50,33,0.07)] backdrop-blur"
+              >
+                <div className="font-griffy text-2xl text-[#245b3f]">{stat.value}</div>
+                <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-[#6b5f4a]">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-[1.1fr_1.5fr] gap-10 items-start">
           <div className="relative">
@@ -93,6 +128,15 @@ const AboutArtist: React.FC = () => {
                   </>
                 )}
               </div>
+            </div>
+
+            <div className="rounded-[20px] border border-[#e3dccf] bg-gradient-to-br from-white/85 to-[#f3efe6] p-5 shadow-[0_10px_30px_rgba(64,50,33,0.08)]">
+              <h3 className="text-lg font-griffy text-[#245b3f]">Currently</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#4b4a3f]">
+                Illustrating picture books with Sawdust Publishing, developing two original
+                worlds &mdash; Pebblewick and the Hidden Cryptid Alliance &mdash; and seeking a
+                literary agent for children&rsquo;s book work.
+              </p>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">

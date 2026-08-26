@@ -13,6 +13,7 @@ import { OrderHistoryList } from '@/components/admin/OrderHistoryList';
 import { AbandonedCartsList } from '@/components/admin/AbandonedCartsList';
 import { CharacterList } from '@/components/admin/CharacterList';
 import { TestimonialList } from '@/components/admin/TestimonialList';
+import { InfluenceList } from '@/components/admin/InfluenceList';
 import EventList from '@/components/admin/EventList';
 import { Painting, Book, Merchandise } from '@/types';
 import DataLoadingStatus from '@/components/DataLoadingStatus';
@@ -141,6 +142,7 @@ const DashboardPage: React.FC = () => {
           <TabsTrigger value="events">Events</TabsTrigger>
           <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
           <TabsTrigger value="artist">Artist</TabsTrigger>
+          <TabsTrigger value="inspiration">Inspiration</TabsTrigger>
         </TabsList>
         
         <TabsContent value="characters" className="space-y-6">
@@ -308,6 +310,21 @@ const DashboardPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <TestimonialList />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="inspiration" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Inspiration</CardTitle>
+              <CardDescription>
+                The artists shown on the About page. Add a portrait for each, or leave it
+                blank to show their initials.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <InfluenceList />
             </CardContent>
           </Card>
         </TabsContent>
