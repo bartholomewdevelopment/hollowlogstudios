@@ -6,6 +6,7 @@ import CurrentCharacters from '@/components/CurrentCharacters';
 import CurrentCryptids from '@/components/CurrentCryptids';
 import FeaturedArtwork from '@/components/FeaturedArtwork';
 import Testimonials from '@/components/Testimonials';
+import PublishedBooks from '@/components/PublishedBooks';
 import Footer from '@/components/Footer';
 import { getFeaturedBook } from '@/firebase/bookService';
 import { Book } from '@/types';
@@ -45,6 +46,7 @@ const HomePage: React.FC = () => {
         featuredBook={featuredBook}
         onViewBookDetails={featuredBook ? () => handleViewBookDetails(featuredBook) : undefined}
       />
+      <PublishedBooks />
       <UpcomingEvents />
       <CurrentCharacters />
       <CurrentCryptids />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Book } from '@/types';
-import { Eye, ShoppingCart, Brush } from 'lucide-react';
+import { Eye, ShoppingCart, Brush, BookOpen } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import ArtShowcase, { ShowcaseItem } from '@/components/ArtShowcase';
 import { autographedPrice, canAutograph } from '@/lib/bookPricing';
@@ -108,34 +108,45 @@ const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
 
           {/* Left: copy + CTAs */}
           <div className="lg:w-1/2 text-white lg:pt-4">
-            <p className="text-green-200 font-semibold tracking-widest text-sm uppercase mb-3">
-              Bethany Bartholomew &mdash; Hollow Log Studios
+            <p className="text-green-200 font-semibold tracking-[0.25em] text-xs uppercase mb-3">
+              Children&rsquo;s Book Illustrator &middot; Watercolor
             </p>
-            <h1 className="text-5xl md:text-6xl font-bold font-griffy text-white mb-5 leading-tight">
-              Watercolor Fairy Tale Art
+            <h1 className="text-5xl md:text-6xl font-bold font-griffy text-white mb-4 leading-tight">
+              Bethany Bartholomew
             </h1>
-            <p className="text-lg text-green-100 mb-8 max-w-lg leading-relaxed">
-              Bringing diverse cultures and magical worlds to life through exquisite
-              watercolor paintings, custom illustrations, and breathtaking murals.
+            <p className="text-lg text-green-100 mb-6 max-w-lg leading-relaxed">
+              Watercolor stories rooted in folklore and rural life &mdash; gentle
+              characters, natural texture, and diverse young heroes who see
+              themselves in the pages.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <Button
                 size="lg"
                 className="bg-white text-[#238830] hover:bg-green-50 font-semibold px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer"
                 onClick={() => navigate('/gallery')}
               >
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                Shop Now
+                <Eye className="h-5 w-5 mr-2" />
+                View the Portfolio
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 className="border-2 border-white text-white bg-transparent hover:bg-white hover:text-[#238830] font-semibold px-8 py-3 transition-all duration-200 cursor-pointer"
-                onClick={() => navigate('/commissions')}
+                onClick={() => {
+                  document.getElementById('books')?.scrollIntoView({ behavior: 'smooth' });
+                }}
               >
-                <Brush className="h-5 w-5 mr-2" />
-                Commission Art
+                <BookOpen className="h-5 w-5 mr-2" />
+                Picture Books
               </Button>
+              <button
+                type="button"
+                onClick={() => navigate('/commissions')}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-green-100 underline-offset-4 hover:text-white hover:underline cursor-pointer"
+              >
+                <Brush className="h-4 w-4" />
+                Commission work
+              </button>
             </div>
           </div>
 

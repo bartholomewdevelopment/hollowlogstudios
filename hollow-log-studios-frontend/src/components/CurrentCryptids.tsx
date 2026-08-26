@@ -29,11 +29,11 @@ const CurrentCryptids: React.FC = () => {
       <section className="py-16 px-4 bg-gradient-to-r from-gray-900 to-purple-900">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 griffy-text text-white">
-            Core Alliance Members
+            The Hidden Cryptids Alliance
           </h2>
           <p className="text-xl text-gray-300 text-center mb-12 max-w-3xl mx-auto">
-            Meet the founding members of the Hidden Cryptids Alliance - brave guardians who have 
-            stepped out of the shadows to protect both the natural world and humanity.
+            An original illustrated series. Meet the founding members &mdash; brave guardians who
+            have stepped out of the shadows to protect both the natural world and humanity.
           </p>
           
           <div className={`grid gap-6 ${

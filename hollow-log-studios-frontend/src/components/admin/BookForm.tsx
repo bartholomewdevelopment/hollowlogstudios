@@ -27,6 +27,9 @@ const formSchema = z.object({
   website_cart_available: z.boolean().default(true),
   autograph_available: z.boolean().default(true),
   pre_order: z.boolean().default(false),
+  publisher: z.string().optional(),
+  publication_year: z.string().optional(),
+  role: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -56,6 +59,9 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
       website_cart_available: book?.website_cart_available ?? true,
       autograph_available: book?.autograph_available ?? true,
       pre_order: book?.pre_order ?? false,
+      publisher: book?.publisher || '',
+      publication_year: book?.publication_year || '',
+      role: book?.role || '',
     },
   });
 
@@ -81,6 +87,9 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
         website_cart_available: data.website_cart_available,
         autograph_available: data.autograph_available,
         pre_order: data.pre_order,
+        publisher: data.publisher || null,
+        publication_year: data.publication_year || null,
+        role: data.role || null,
       };
       
       if (book) {
@@ -155,6 +164,48 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
           )}
         />
         
+        <div className="grid gap-4 sm:grid-cols-3">
+          <FormField
+            control={form.control}
+            name="publisher"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Publisher</FormLabel>
+                <FormControl>
+                  <Input placeholder="Sawdust Publishing" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="publication_year"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Year</FormLabel>
+                <FormControl>
+                  <Input placeholder="2025" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Her Role</FormLabel>
+                <FormControl>
+                  <Input placeholder="Illustrator" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <FormField
           control={form.control}
           name="featured"

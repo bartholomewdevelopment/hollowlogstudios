@@ -28,6 +28,11 @@ export interface Book {
   autograph_available?: boolean;
   /** Not yet released — shown as a pre-order on the storefront and in the cart. */
   pre_order?: boolean;
+  /** Publishing credits, shown on the Published Books section. */
+  publisher?: string | null;
+  publication_year?: string | null;
+  /** e.g. "Illustrator", "Author & Illustrator". */
+  role?: string | null;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }
