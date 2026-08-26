@@ -60,6 +60,12 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
+    // Which artwork appears in the homepage showcase, and in what order
+    match /showcase/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
     // Commissions
     match /commissions/{document=**} {
       allow read, write: if request.auth != null;

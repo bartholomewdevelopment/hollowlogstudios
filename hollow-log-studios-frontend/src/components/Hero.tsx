@@ -4,6 +4,7 @@ import { Book } from '@/types';
 import { Eye, ShoppingCart, Brush, BookOpen } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import ArtShowcase, { ShowcaseItem } from '@/components/ArtShowcase';
+import { getShowcaseSelection } from '@/firebase/showcaseService';
 import { autographedPrice, canAutograph } from '@/lib/bookPricing';
 import PreOrderBadge from '@/components/PreOrderBadge';
 import { useNavigate } from 'react-router-dom';
@@ -30,24 +31,37 @@ async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
 
   if (books.status === 'fulfilled') {
     books.value.forEach(b => {
-      if (b.image_url) items.push({ url: b.image_url, href: `/book/${b.id}`, label: b.title, kind: 'Book' });
+      if (b.image_url)
+        items.push({ url: b.image_url, href: `/book/${b.id}`, label: b.title, kind: 'Book', source_type: 'book', source_id: b.id });
     });
   }
   if (characters.status === 'fulfilled') {
     characters.value.forEach(c => {
       if (c.image_url) {
         const href = c.character_type === 'cryptid' ? '/cryptids' : '/pebblewick';
-        items.push({ url: c.image_url, href, label: c.name, kind: 'Character' });
+        items.push({ url: c.image_url, href, label: c.name, kind: 'Character', source_type: 'character', source_id: c.id });
       }
     });
   }
   if (paintings.status === 'fulfilled') {
     paintings.value.forEach(p => {
-      if (p.image_url) items.push({ url: p.image_url, href: '/gallery', label: p.title, kind: 'Painting' });
+      if (p.image_url)
+        items.push({ url: p.image_url, href: '/gallery', label: p.title, kind: 'Painting', source_type: 'painting', source_id: p.id });
     });
   }
 
-  // A showcase, not an archive — the full collection lives in the gallery.
+  // A curated selection wins; its order is the order shown. Anything that has
+  // since been deleted simply drops out.
+  const selection = await getShowcaseSelection();
+  if (selection) {
+    const byKey = new Map(items.map(i => [`${i.source_type}:${i.source_id}`, i]));
+    const curated = selection
+      .map(ref => byKey.get(`${ref.source_type}:${ref.source_id}`))
+      .filter((i): i is ShowcaseItem => Boolean(i));
+    if (curated.length > 0) return curated;
+  }
+
+  // Otherwise pick automatically — a showcase, not an archive.
   return items.slice(0, MAX_SHOWCASE_ITEMS);
 }
 

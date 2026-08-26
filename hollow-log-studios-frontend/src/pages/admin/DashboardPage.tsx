@@ -14,6 +14,7 @@ import { AbandonedCartsList } from '@/components/admin/AbandonedCartsList';
 import { CharacterList } from '@/components/admin/CharacterList';
 import { TestimonialList } from '@/components/admin/TestimonialList';
 import { InfluenceList } from '@/components/admin/InfluenceList';
+import { ShowcaseManager } from '@/components/admin/ShowcaseManager';
 import EventList from '@/components/admin/EventList';
 import { Painting, Book, Merchandise } from '@/types';
 import DataLoadingStatus from '@/components/DataLoadingStatus';
@@ -143,6 +144,7 @@ const DashboardPage: React.FC = () => {
           <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
           <TabsTrigger value="artist">Artist</TabsTrigger>
           <TabsTrigger value="inspiration">Inspiration</TabsTrigger>
+          <TabsTrigger value="showcase">Showcase</TabsTrigger>
         </TabsList>
         
         <TabsContent value="characters" className="space-y-6">
@@ -310,6 +312,21 @@ const DashboardPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <TestimonialList />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="showcase" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Homepage Showcase</CardTitle>
+              <CardDescription>
+                Choose which artwork appears in the rotating showcase at the top of the
+                homepage, and the order it appears in.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ShowcaseManager />
             </CardContent>
           </Card>
         </TabsContent>

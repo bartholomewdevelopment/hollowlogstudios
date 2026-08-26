@@ -8,6 +8,9 @@ export interface ShowcaseItem {
   label: string;
   /** "Painting", "Book", "Mural", "Character" — shown under the title. */
   kind: string;
+  /** Where it came from, so an admin selection can be matched back to it. */
+  source_type?: string;
+  source_id?: string;
 }
 
 const INTERVAL_MS = 6000;
