@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Book } from '@/types';
 import { Eye, ShoppingCart, Brush } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { autographedPrice, canAutograph } from '@/lib/bookPricing';
 import { useNavigate } from 'react-router-dom';
 import { fetchPaintings } from '@/firebase/galleryService';
 import { fetchBooks } from '@/firebase/bookService';
@@ -142,7 +143,6 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const autographedPrice = 37.99;
   const [artItems, setArtItems] = useState<CarouselItem[]>([]);
 
   useEffect(() => {
@@ -152,15 +152,16 @@ const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
   }, []);
 
   const handleAddToCart = () => {
-    if (featuredBook) {
-      addToCart({
-        id: `${featuredBook.id}-autographed`,
-        title: `${featuredBook.title} (Autographed)`,
-        price: autographedPrice,
-        image_url: featuredBook.image_url,
-        type: 'book',
-      });
-    }
+    if (!featuredBook || featuredBook.price === null) return;
+
+    const signed = canAutograph(featuredBook);
+    addToCart({
+      id: signed ? `${featuredBook.id}-autographed` : featuredBook.id,
+      title: signed ? `${featuredBook.title} (Autographed)` : featuredBook.title,
+      price: signed ? autographedPrice(featuredBook.price) : featuredBook.price,
+      image_url: featuredBook.image_url,
+      type: 'book',
+    });
   };
 
   return (

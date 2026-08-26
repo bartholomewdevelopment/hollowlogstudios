@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink, ShoppingCart, Truck } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { Book } from '@/types';
+import { autographedPrice, canAutograph } from '@/lib/bookPricing';
 
 interface BookPurchaseOptionsProps {
   book: Book;
@@ -10,13 +11,26 @@ interface BookPurchaseOptionsProps {
 
 const BookPurchaseOptions: React.FC<BookPurchaseOptionsProps> = ({ book }) => {
   const { addToCart } = useCart();
-  const autographedPrice = 37.99;
+  const offersAutograph = canAutograph(book);
+  const signedPrice = book.price !== null ? autographedPrice(book.price) : null;
 
   const handleAddAutographedToCart = () => {
+    if (signedPrice === null) return;
     addToCart({
       id: `${book.id}-autographed`,
       title: `${book.title} (Autographed)`,
-      price: autographedPrice,
+      price: signedPrice,
+      image_url: book.image_url,
+      type: 'book'
+    });
+  };
+
+  const handleAddStandardToCart = () => {
+    if (book.price === null) return;
+    addToCart({
+      id: book.id,
+      title: book.title,
+      price: book.price,
       image_url: book.image_url,
       type: 'book'
     });
@@ -77,7 +91,7 @@ const BookPurchaseOptions: React.FC<BookPurchaseOptionsProps> = ({ book }) => {
       <div className="p-3 bg-blue-50 rounded-lg">
         <div className="flex items-center justify-center text-sm text-blue-800">
           <Truck className="mr-2 h-4 w-4" />
-          <span><strong>Note:</strong> $4.95 shipping added to autographed copies</span>
+          <span><strong>Note:</strong> shipping from $4.95, based on order size</span>
         </div>
       </div>
 
@@ -93,23 +107,33 @@ const BookPurchaseOptions: React.FC<BookPurchaseOptionsProps> = ({ book }) => {
           </div>
         )}
 
-        {/* Autographed Option */}
+        {/* Direct from the artist */}
         {book.website_cart_available && (
           <div className={`border border-[#238830] rounded-lg p-6 text-center space-y-4 bg-green-50 ${
             !book.publisher_available ? 'md:col-span-2' : ''
           }`}>
-            <h4 className="font-semibold text-lg text-[#238830]">Autographed Copy</h4>
+            <h4 className="font-semibold text-lg text-[#238830]">
+              {offersAutograph ? 'Autographed Copy' : 'Buy from the Artist'}
+            </h4>
             <p className="text-gray-600 text-sm">
-              Get a personally signed copy by Bethany Bartholomew. Perfect for collectors or as a special gift.
+              {offersAutograph
+                ? 'Get a personally signed copy by Bethany Bartholomew. Perfect for collectors or as a special gift.'
+                : 'Order your copy directly from Bethany. This title is not available autographed.'}
             </p>
-            <p className="text-2xl font-bold text-[#238830]">${autographedPrice}</p>
-            <Button 
-              onClick={handleAddAutographedToCart}
-              className="w-full bg-[#238830] hover:bg-green-700 text-white flex items-center justify-center gap-2"
-            >
-              <ShoppingCart className="h-4 w-4" />
-              Add to Cart
-            </Button>
+            <p className="text-2xl font-bold text-[#238830]">
+              {book.price === null
+                ? 'Price on request'
+                : `$${(offersAutograph ? signedPrice! : book.price).toFixed(2)}`}
+            </p>
+            {book.price !== null && (
+              <Button 
+                onClick={offersAutograph ? handleAddAutographedToCart : handleAddStandardToCart}
+                className="w-full bg-[#238830] hover:bg-green-700 text-white flex items-center justify-center gap-2"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                Add to Cart
+              </Button>
+            )}
           </div>
         )}
 

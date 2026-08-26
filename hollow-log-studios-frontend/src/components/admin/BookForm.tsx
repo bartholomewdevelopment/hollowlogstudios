@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ImageUpload } from '@/components/admin/ImageUpload';
 import { MultiImageUpload } from '@/components/admin/MultiImageUpload';
 import { useToast } from '@/hooks/use-toast';
+import { AUTOGRAPH_SURCHARGE, autographedPrice } from '@/lib/bookPricing';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -24,6 +25,7 @@ const formSchema = z.object({
   publisher_link: z.string().optional(),
   publisher_in_stock: z.boolean().default(false),
   website_cart_available: z.boolean().default(true),
+  autograph_available: z.boolean().default(true),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -51,8 +53,14 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
       publisher_link: book?.publisher_link || '',
       publisher_in_stock: book?.publisher_in_stock || false,
       website_cart_available: book?.website_cart_available ?? true,
+      autograph_available: book?.autograph_available ?? true,
     },
   });
+
+  const priceValue = parseFloat(form.watch('price') || '');
+  const autographedHint = Number.isFinite(priceValue)
+    ? ` (currently $${autographedPrice(priceValue).toFixed(2)})`
+    : '';
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -69,6 +77,7 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
         publisher_link: data.publisher_link || null,
         publisher_in_stock: data.publisher_in_stock,
         website_cart_available: data.website_cart_available,
+        autograph_available: data.autograph_available,
       };
       
       if (book) {
@@ -179,6 +188,29 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
                 <FormLabel>Available for Website Cart</FormLabel>
                 <p className="text-sm text-gray-500">
                   Allow customers to add this book to their cart
+                </p>
+              </div>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="autograph_available"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  disabled={!form.watch('website_cart_available')}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Autographed Copies Available</FormLabel>
+                <p className="text-sm text-gray-500">
+                  Offer a signed copy for ${AUTOGRAPH_SURCHARGE} more than the standard
+                  price{autographedHint}. Uncheck this for books that cannot be signed.
                 </p>
               </div>
             </FormItem>

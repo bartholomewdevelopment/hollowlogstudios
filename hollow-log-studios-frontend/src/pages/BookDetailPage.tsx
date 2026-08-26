@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import AppLayout from '@/components/AppLayout';
+import { autographedPrice, canAutograph } from '@/lib/bookPricing';
 
 const BookDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +15,7 @@ const BookDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const offersAutograph = book ? canAutograph(book) : false;
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -43,15 +45,15 @@ const BookDetailPage: React.FC = () => {
   }, [id]);
 
   const handleAddToCart = () => {
-    if (book) {
-      addToCart({
-        id: book.id,
-        title: book.title,
-        price: book.price,
-        image_url: book.image_url,
-        type: 'book'
-      });
-    }
+    if (!book || book.price === null) return;
+
+    addToCart({
+      id: offersAutograph ? `${book.id}-autographed` : book.id,
+      title: offersAutograph ? `${book.title} (Autographed)` : book.title,
+      price: offersAutograph ? autographedPrice(book.price) : book.price,
+      image_url: book.image_url,
+      type: 'book'
+    });
   };
 
   const handleGoBack = () => {
@@ -101,9 +103,14 @@ const BookDetailPage: React.FC = () => {
               
               <div className="pt-4 border-t border-gray-200">
                 <h2 className="text-xl font-semibold mb-2">Pricing</h2>
-                <p className="text-2xl font-bold text-[#238830] mb-4">
-                  {book.price ? `$${book.price}` : 'Price on request'}
+                <p className="text-2xl font-bold text-[#238830] mb-1">
+                  {book.price === null
+                    ? 'Price on request'
+                    : `$${(offersAutograph ? autographedPrice(book.price) : book.price).toFixed(2)}`}
                 </p>
+                {book.price !== null && offersAutograph && (
+                  <p className="text-sm text-gray-500 mb-4">Autographed copy</p>
+                )}
                 
                 {book.price && (
                   <Button 

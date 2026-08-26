@@ -58,7 +58,7 @@ const BookCard: React.FC<BookCardProps> = ({
         <div className="mb-3 p-2 bg-blue-50 rounded-md">
           <div className="flex items-center text-sm text-blue-800">
             <Truck className="mr-2 h-4 w-4" />
-            <span>+ $4.95 shipping on all orders</span>
+            <span>+ shipping from $4.95, based on order size</span>
           </div>
         </div>
         

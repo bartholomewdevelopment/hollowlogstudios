@@ -11,7 +11,24 @@ const stripe = new Stripe(functions.config().stripe?.secret_key || process.env.S
   apiVersion: '2023-10-16',
 });
 
-const SHIPPING_COST = 495; // $4.95 in cents
+// Shipping is charged once per order, based on the total number of items.
+// Mirrors src/lib/shipping.ts — change both together. Amounts are in cents.
+const SHIPPING_TIERS = [
+  { maxItems: 1, cost: 495 },
+  { maxItems: 3, cost: 795 },
+  { maxItems: 5, cost: 999 },
+];
+const SHIPPING_PER_EXTRA_ITEM = 125;
+
+function calculateShipping(itemCount) {
+  if (itemCount <= 0) return 0;
+
+  const tier = SHIPPING_TIERS.find(t => itemCount <= t.maxItems);
+  if (tier) return tier.cost;
+
+  const top = SHIPPING_TIERS[SHIPPING_TIERS.length - 1];
+  return top.cost + (itemCount - top.maxItems) * SHIPPING_PER_EXTRA_ITEM;
+}
 
 /**
  * Create a Stripe Checkout Session
@@ -52,15 +69,16 @@ exports.createCheckoutSession = functions.https.onRequest((req, res) => {
         quantity: item.quantity || 1,
       }));
 
-      // Add shipping as a line item
+      // Add shipping as a line item, priced by how many items are ordered
+      const itemCount = items.reduce((n, item) => n + (item.quantity || 1), 0);
       lineItems.push({
         price_data: {
           currency: 'usd',
           product_data: {
             name: 'Shipping & Handling',
-            description: 'Standard shipping',
+            description: `Standard shipping (${itemCount} item${itemCount === 1 ? '' : 's'})`,
           },
-          unit_amount: SHIPPING_COST,
+          unit_amount: calculateShipping(itemCount),
         },
         quantity: 1,
       });

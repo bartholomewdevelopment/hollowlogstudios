@@ -4,6 +4,7 @@ import { toast } from '@/hooks/use-toast';
 import { useAuth } from './AuthContext';
 import { saveAbandonedCart } from '@/firebase/cartService';
 import { v4 as uuidv4 } from 'uuid';
+import { calculateShipping } from '@/lib/shipping';
 
 interface CartContextType {
   cartItems: CartItem[];
@@ -19,7 +20,6 @@ interface CartContextType {
   grandTotal: number;
 }
 
-const SHIPPING_COST = 4.95;
 
 const defaultCartContext: CartContextType = {
   cartItems: [],
@@ -31,7 +31,7 @@ const defaultCartContext: CartContextType = {
   toggleCart: () => {},
   totalItems: 0,
   totalPrice: 0,
-  shippingCost: SHIPPING_COST,
+  shippingCost: 0,
   grandTotal: 0,
 };
 
@@ -203,7 +203,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const totalPrice = cartItems.reduce((total, item) => {
     return total + (item.price || 0) * item.quantity;
   }, 0);
-  const shippingCost = cartItems.length > 0 ? SHIPPING_COST : 0;
+  const shippingCost = calculateShipping(totalItems);
   const grandTotal = totalPrice + shippingCost;
 
   return (

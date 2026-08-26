@@ -2,8 +2,6 @@ import { loadStripe } from '@stripe/stripe-js';
 import { CartItem, Purchase } from '@/types';
 import { createPurchase } from './purchaseService';
 
-const SHIPPING_COST = 4.95;
-
 // Initialize Stripe - you'll need to add your publishable key to .env
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
@@ -110,5 +108,3 @@ export async function recordPurchase(
 export function getStripe() {
   return stripePromise;
 }
-
-export { SHIPPING_COST };

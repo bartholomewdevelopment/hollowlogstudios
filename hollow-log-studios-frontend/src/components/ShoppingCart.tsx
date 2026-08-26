@@ -97,7 +97,7 @@ const ShoppingCart: React.FC = () => {
                 <div className="flex items-center">
                   <Truck className="mr-2 h-4 w-4 text-blue-600" />
                   <p className="text-sm text-blue-800">
-                    <strong>Mandatory shipping:</strong> $4.95 added to all orders
+                    <strong>Shipping:</strong> from $4.95, based on how many items you order
                   </p>
                 </div>
               </div>

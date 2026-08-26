@@ -24,6 +24,8 @@ export interface Book {
   publisher_link: string | null;
   publisher_in_stock: boolean;
   website_cart_available: boolean;
+  /** Optional: books saved before this flag existed are treated as true. */
+  autograph_available?: boolean;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }
