@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import UpcomingEvents from '@/components/UpcomingEvents';
-import CurrentCharacters from '@/components/CurrentCharacters';
-import CurrentCryptids from '@/components/CurrentCryptids';
 import FeaturedArtwork from '@/components/FeaturedArtwork';
 import Testimonials from '@/components/Testimonials';
 import PublishedBooks from '@/components/PublishedBooks';
+import OriginalWorlds from '@/components/OriginalWorlds';
+import Representation from '@/components/Representation';
 import Footer from '@/components/Footer';
 import { getFeaturedBook } from '@/firebase/bookService';
 import { Book } from '@/types';
@@ -47,11 +47,11 @@ const HomePage: React.FC = () => {
         onViewBookDetails={featuredBook ? () => handleViewBookDetails(featuredBook) : undefined}
       />
       <PublishedBooks />
+      <OriginalWorlds />
       <UpcomingEvents />
-      <CurrentCharacters />
-      <CurrentCryptids />
       <FeaturedArtwork />
       <Testimonials />
+      <Representation />
       <Footer />
 
       {/* Book Detail Modal */}

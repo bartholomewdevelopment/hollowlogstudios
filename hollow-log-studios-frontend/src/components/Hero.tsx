@@ -9,38 +9,28 @@ import PreOrderBadge from '@/components/PreOrderBadge';
 import { useNavigate } from 'react-router-dom';
 import { fetchPaintings } from '@/firebase/galleryService';
 import { fetchBooks } from '@/firebase/bookService';
-import { getMurals } from '@/firebase/muralService';
 import { getAllCharacters } from '@/firebase/characterService';
 
 // ─── Each carousel item carries its destination route ────────────────────────
 const MAX_SHOWCASE_ITEMS = 12;
 
 async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
-  const [paintings, books, murals, characters] = await Promise.allSettled([
+  // Books, characters and paintings only. Murals are strong work but they are
+  // not what she is pitching to literary agents, so they stay in the gallery.
+  const [paintings, books, characters] = await Promise.allSettled([
     fetchPaintings(),
     fetchBooks(),
-    getMurals(),
     getAllCharacters(),
   ]);
 
-  // Deterministic order, strongest categories first. Randomising meant the
-  // site looked different on every visit, which is the opposite of what a
-  // portfolio wants.
+  // Deterministic order: published books, then original characters, then
+  // paintings. Randomising meant the site looked different on every visit,
+  // which is the opposite of what a portfolio wants.
   const items: ShowcaseItem[] = [];
 
   if (books.status === 'fulfilled') {
     books.value.forEach(b => {
       if (b.image_url) items.push({ url: b.image_url, href: `/book/${b.id}`, label: b.title, kind: 'Book' });
-    });
-  }
-  if (paintings.status === 'fulfilled') {
-    paintings.value.forEach(p => {
-      if (p.image_url) items.push({ url: p.image_url, href: '/gallery', label: p.title, kind: 'Painting' });
-    });
-  }
-  if (murals.status === 'fulfilled') {
-    murals.value.forEach(m => {
-      if (m.image_url) items.push({ url: m.image_url, href: '/gallery', label: m.title ?? 'Mural', kind: 'Mural' });
     });
   }
   if (characters.status === 'fulfilled') {
@@ -49,6 +39,11 @@ async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
         const href = c.character_type === 'cryptid' ? '/cryptids' : '/pebblewick';
         items.push({ url: c.image_url, href, label: c.name, kind: 'Character' });
       }
+    });
+  }
+  if (paintings.status === 'fulfilled') {
+    paintings.value.forEach(p => {
+      if (p.image_url) items.push({ url: p.image_url, href: '/gallery', label: p.title, kind: 'Painting' });
     });
   }
 
