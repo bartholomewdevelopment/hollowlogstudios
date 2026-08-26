@@ -109,13 +109,16 @@ const ArtShowcase: React.FC<{ items: ShowcaseItem[] }> = ({ items }) => {
           )}
         </div>
 
-        {/* Caption — always visible, not hover-only */}
-        <div className="flex items-end justify-between gap-4 border-t border-white/15 bg-black/25 px-5 py-3 backdrop-blur">
-          <div className="min-w-0" aria-live="polite">
+        {/* Caption — always visible, not hover-only. Centred like a gallery
+            placard: the controls are positioned over the bar rather than
+            sharing the row, so the title centres on the stage instead of on
+            whatever space the buttons leave behind. */}
+        <div className="relative border-t border-white/15 bg-black/25 px-5 py-3 backdrop-blur">
+          <div className="min-w-0 text-center sm:px-32" aria-live="polite">
             <p className="truncate font-griffy text-lg leading-tight text-white">{item.label}</p>
             <p className="text-xs uppercase tracking-widest text-green-200">{item.kind}</p>
           </div>
-          <div className="flex shrink-0 items-center gap-3">
+          <div className="mt-3 flex items-center justify-center gap-3 sm:absolute sm:right-4 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2">
             {items.length > 1 && !reducedMotion && (
               <button
                 type="button"
