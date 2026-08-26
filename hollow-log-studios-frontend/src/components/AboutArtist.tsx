@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { getArtistProfile } from '@/firebase/artistService';
 import type { ArtistProfile } from '@/firebase/artistService';
-import beatrixPotterPortrait from '@/assets/influences/beatrix-potter.png';
 
 const AboutArtist: React.FC = () => {
   const [profile, setProfile] = useState<ArtistProfile | null>(null);
@@ -111,79 +110,6 @@ const AboutArtist: React.FC = () => {
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-[#e3dccf] bg-gradient-to-br from-white/85 to-[#f3efe6] p-6 shadow-[0_14px_34px_rgba(64,50,33,0.1)]">
-              <h3 className="text-xl font-griffy text-[#245b3f]">Inspiration</h3>
-              <p className="mt-2 text-sm text-[#4b4a3f]">
-                Nature, cultural diversity, and childhood imagination in rural Ohio.
-              </p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {[
-                  {
-                    name: 'Beatrix Potter',
-                    note: 'Nature-rooted storytelling with a tender hand.',
-                    image_url: beatrixPotterPortrait,
-                  },
-                  {
-                    name: 'Leo & Diane Dillon',
-                    note: 'Lyrical color and generous representation.',
-                  },
-                  {
-                    name: 'N.C. Wyeth',
-                    note: 'Cinematic composition and warm atmosphere.',
-                  },
-                  {
-                    name: 'Maurice Sendak',
-                    note: 'Whimsy with a hint of wildness.',
-                  },
-                  {
-                    name: 'James C. Christensen',
-                    note: 'Mythic charm with intricate detail.',
-                  },
-                  {
-                    name: 'Thomas Blackshear',
-                    note: 'Elegant figures and soulful expressions.',
-                  },
-                  {
-                    name: 'Norman Rockwell',
-                    note: 'Everyday stories rendered with heart.',
-                  },
-                  {
-                    name: 'The Leyendecker Brothers',
-                    note: 'Classic illustration drama and flow.',
-                  },
-                ].map((artist) => (
-                  <div
-                    key={artist.name}
-                    className="group relative overflow-hidden rounded-2xl border border-[#e2d6c2] bg-white/80 p-4 shadow-[0_10px_24px_rgba(64,50,33,0.08)]"
-                  >
-                    <div className="pointer-events-none absolute -left-6 -top-8 h-24 w-24 rounded-full bg-[radial-gradient(circle_at_center,rgba(244,191,111,0.35),transparent_70%)] blur-xl" />
-                    <div className="pointer-events-none absolute -bottom-8 -right-6 h-28 w-28 rounded-full bg-[radial-gradient(circle_at_center,rgba(35,136,48,0.2),transparent_70%)] blur-2xl" />
-                    <div className="relative flex items-start gap-3">
-                      <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full border border-[#d9cbb0] bg-[#f6f1e7] text-[10px] uppercase tracking-[0.2em] text-[#6b5f4a] flex items-center justify-center">
-                        {artist.image_url ? (
-                          <img
-                            src={artist.image_url}
-                            alt={`${artist.name} portrait`}
-                            className="h-full w-full object-cover grayscale-[30%]"
-                          />
-                        ) : (
-                          artist.name
-                            .split(' ')
-                            .slice(0, 2)
-                            .map((part) => part[0])
-                            .join('')
-                        )}
-                      </div>
-                      <div>
-                        <div className="text-sm font-semibold text-[#3f4a45]">{artist.name}</div>
-                        <p className="mt-1 text-xs text-[#6a5c4a] leading-relaxed">{artist.note}</p>
-                      </div>
-                    </div>
-                    <div className="pointer-events-none absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-[#f1c27b] via-[#b7d3a1] to-transparent opacity-70" />
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>

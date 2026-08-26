@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AboutArtist from '@/components/AboutArtist';
+import Influences from '@/components/Influences';
 import PastEvents from '@/components/PastEvents';
 
 const AboutPage: React.FC = () => {
@@ -9,6 +10,7 @@ const AboutPage: React.FC = () => {
     <div className="min-h-screen bg-white">
       <Navbar />
       <AboutArtist />
+      <Influences />
       <PastEvents />
       <Footer />
     </div>
