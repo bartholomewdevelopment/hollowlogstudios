@@ -56,7 +56,7 @@ const OriginalWorlds: React.FC = () => {
   }, []);
 
   return (
-    <section className="bg-gradient-to-b from-[#eef3ea] via-[#f6f2e8] to-[#f8f1e7] py-16">
+    <section className="fairy-lattice bg-gradient-to-b from-[#eef3ea] via-[#f6f2e8] to-[#f8f1e7] py-16">
       <div className="container mx-auto max-w-6xl px-4">
         <div className="mb-10 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#d7d1c4] bg-white/70 px-4 py-1 text-xs uppercase tracking-[0.3em] text-[#6b5f4a] shadow-sm">

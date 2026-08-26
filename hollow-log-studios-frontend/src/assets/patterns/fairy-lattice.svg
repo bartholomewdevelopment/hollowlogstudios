@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260">
+  <g fill="none" stroke="#245b3f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- toadstool, upper left -->
+    <g transform="translate(46 54)">
+      <path d="M-17 0a17 12 0 0 1 34 0z"/>
+      <path d="M-5 0c0 8-1 14 -3 18 M5 0c0 8 1 14 3 18"/>
+      <path d="M-8 18q8 4 16 0"/>
+      <path d="M-8-4a3 2.4 0 1 0 .1 0M6-7a3.4 2.6 0 1 0 .1 0"/>
+    </g>
+
+    <!-- small toadstool beside it -->
+    <g transform="translate(74 62)">
+      <path d="M-10 0a10 7 0 0 1 20 0z"/>
+      <path d="M-3 0c0 5-.5 9-2 11 M3 0c0 5 .5 9 2 11"/>
+    </g>
+
+    <!-- leaf sprig, upper right -->
+    <g transform="translate(168 44) rotate(-18)">
+      <path d="M0 0q13-11 28 0-15 11-28 0z"/>
+      <path d="M0 0h28"/>
+      <path d="M7-4l3 4-3 4M15-5l3 5-3 5"/>
+    </g>
+
+    <!-- fern frond, lower left -->
+    <g transform="translate(58 152)">
+      <path d="M0 0c6-11 9-24 7-36"/>
+      <path d="M2-7q-7-1-10-5M4-15q-7-1-10-5M6-24q-7-1-10-5"/>
+      <path d="M3-9q7-3 9-8M5-18q7-3 9-8"/>
+    </g>
+
+    <!-- trailing vine, lower right -->
+    <g transform="translate(160 168)">
+      <path d="M0 0q16 6 30-4"/>
+      <path d="M8 3q2-8 8-9M20 3q2-8 8-9"/>
+      <path d="M4 2q-3 6-9 7"/>
+    </g>
+
+    <!-- single leaf, mid right -->
+    <g transform="translate(214 108) rotate(38)">
+      <path d="M0 0q9-8 20 0-11 8-20 0z"/>
+      <path d="M0 0h20"/>
+    </g>
+
+    <!-- single leaf, mid left -->
+    <g transform="translate(18 122) rotate(-42)">
+      <path d="M0 0q8-7 18 0-10 7-18 0z"/>
+      <path d="M0 0h18"/>
+    </g>
+
+    <!-- toadstool, bottom centre -->
+    <g transform="translate(126 224)">
+      <path d="M-13 0a13 9 0 0 1 26 0z"/>
+      <path d="M-4 0c0 6-.5 11-2 14 M4 0c0 6 .5 11 2 14"/>
+      <path d="M-6 14q6 3 12 0"/>
+      <path d="M-5-3a2.4 2 0 1 0 .1 0"/>
+    </g>
+
+    <!-- scattered spores -->
+    <g stroke-width="1.4">
+      <path d="M100 96a1.6 1.6 0 1 0 .1 0M226 196a1.6 1.6 0 1 0 .1 0M34 206a1.6 1.6 0 1 0 .1 0M196 12a1.6 1.6 0 1 0 .1 0"/>
+    </g>
+  </g>
+</svg>

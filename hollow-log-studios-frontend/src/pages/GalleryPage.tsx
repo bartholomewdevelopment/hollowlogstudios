@@ -5,7 +5,7 @@ import GalleryShop from '@/components/GalleryShop';
 
 const GalleryPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="fairy-lattice min-h-screen bg-white">
       <Navbar />
       <div className="py-8 bg-green-50">
         <div className="container mx-auto px-4">

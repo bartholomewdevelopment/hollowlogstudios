@@ -96,7 +96,7 @@ const Influences: React.FC = () => {
   if (influences.length === 0) return null;
 
   return (
-    <section className="bg-gradient-to-b from-[#f4efe4] to-[#eef3ea] py-12">
+    <section className="fairy-lattice bg-gradient-to-b from-[#f4efe4] to-[#eef3ea] py-12">
       <div className="container mx-auto max-w-5xl px-4">
         <div className="mb-8 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#d7d1c4] bg-white/70 px-4 py-1 text-xs uppercase tracking-[0.3em] text-[#6b5f4a] shadow-sm">

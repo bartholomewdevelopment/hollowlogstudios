@@ -40,7 +40,7 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="fairy-lattice min-h-screen bg-white">
       <Navbar />
       <Hero 
         featuredBook={featuredBook}

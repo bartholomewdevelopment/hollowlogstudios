@@ -7,7 +7,7 @@ const CONTACT_EMAIL = 'bethany@hollowlogstudios.com';
  *  from the commission form and the shop — the people this is aimed at are
  *  not buying a print. */
 const Representation: React.FC = () => (
-  <section id="representation" className="bg-[#245b3f] py-16 text-white">
+  <section id="representation" className="fairy-lattice-light bg-[#245b3f] py-16 text-white">
     <div className="container mx-auto max-w-4xl px-4 text-center">
       <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.3em] text-green-100">
         For Agents &amp; Publishers

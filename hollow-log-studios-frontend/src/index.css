@@ -400,3 +400,47 @@
 .dark .premium-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
+
+/* ── Faint leafy / mushroom lattice ──────────────────────────────────────────
+   Painted as a pseudo-element with a negative z-index inside an isolated
+   stacking context. That places it above the section's own background but
+   strictly beneath its content, so it can never sit on top of text, artwork
+   or controls, and pointer-events are off so it never intercepts a click.
+
+   .fairy-lattice        dark motif, for cream / light sections
+   .fairy-lattice-light  white motif, for the deep green sections            */
+
+.fairy-lattice,
+.fairy-lattice-light {
+  position: relative;
+  isolation: isolate;
+}
+
+.fairy-lattice::before,
+.fairy-lattice-light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* The tile is layered twice at different scales and offsets. A single
+     repeat reads as an obvious grid; two layers whose periods do not divide
+     evenly break that up and look hand-scattered. */
+  background-repeat: repeat, repeat;
+  background-size: 260px 260px, 397px 397px;
+  background-position: 0 0, 131px 89px;
+}
+
+.fairy-lattice::before {
+  background-image:
+    url('./assets/patterns/fairy-lattice.svg'),
+    url('./assets/patterns/fairy-lattice.svg');
+  opacity: 0.045;
+}
+
+.fairy-lattice-light::before {
+  background-image:
+    url('./assets/patterns/fairy-lattice-light.svg'),
+    url('./assets/patterns/fairy-lattice-light.svg');
+  opacity: 0.06;
+}

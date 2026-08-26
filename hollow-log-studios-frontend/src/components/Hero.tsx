@@ -85,16 +85,8 @@ const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
   return (
     <section
       id="main-content"
-      className="relative bg-gradient-to-br from-green-900 via-[#238830] to-green-700 overflow-hidden"
+      className="fairy-lattice-light relative bg-gradient-to-br from-green-900 via-[#238830] to-green-700 overflow-hidden"
     >
-      <div
-        className="absolute inset-0 opacity-10 pointer-events-none"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }}
-      />
 
       <div className="container mx-auto px-4 relative py-12 md:py-16">
 

@@ -31,6 +31,8 @@ export interface Book {
   /** Publishing credits, shown on the Published Books section. */
   publisher?: string | null;
   publication_year?: string | null;
+  /** Who wrote it — both titles so far are written by Rebekah Eyre. */
+  author?: string | null;
   /** e.g. "Illustrator", "Author & Illustrator". */
   role?: string | null;
   created_at: Timestamp | string;

@@ -7,7 +7,7 @@ import PastEvents from '@/components/PastEvents';
 
 const AboutPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="fairy-lattice min-h-screen bg-white">
       <Navbar />
       <AboutArtist />
       <Influences />

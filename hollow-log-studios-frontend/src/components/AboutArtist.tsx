@@ -37,7 +37,7 @@ const AboutArtist: React.FC = () => {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#f8f1e7] via-[#f4efe4] to-[#e6f0e1] py-14">
+    <section className="fairy-lattice relative overflow-hidden bg-gradient-to-br from-[#f8f1e7] via-[#f4efe4] to-[#e6f0e1] py-14">
       <div className="absolute -top-24 right-[-10%] h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(35,136,48,0.25),transparent_70%)] blur-2xl animate-[float_10s_ease-in-out_infinite]" />
       <div className="absolute -bottom-24 left-[-5%] h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,rgba(244,191,111,0.35),transparent_70%)] blur-3xl animate-[float_12s_ease-in-out_infinite]" />
       <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.6),transparent_40%,rgba(255,255,255,0.35))]" />

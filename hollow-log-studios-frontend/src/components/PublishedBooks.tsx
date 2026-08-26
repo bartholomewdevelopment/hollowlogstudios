@@ -25,7 +25,7 @@ const PublishedBooks: React.FC = () => {
   return (
     <section
       id="books"
-      className="bg-gradient-to-b from-[#f8f1e7] via-[#f6f2e8] to-[#eef3ea] py-16"
+      className="fairy-lattice bg-gradient-to-b from-[#f8f1e7] via-[#f6f2e8] to-[#eef3ea] py-16"
     >
       <div className="container mx-auto max-w-6xl px-4">
         <div className="mb-10 text-center">
@@ -74,6 +74,12 @@ const PublishedBooks: React.FC = () => {
                 <h3 className="font-griffy text-2xl leading-tight text-[#245b3f]">
                   {book.title}
                 </h3>
+
+                {book.author && (
+                  <p className="mt-1 text-sm italic text-[#3f4a45]">
+                    Written by {book.author}
+                  </p>
+                )}
 
                 {(book.publisher || book.publication_year) && (
                   <p className="mt-1 text-sm text-[#6b5f4a]">
