@@ -27,7 +27,8 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({ character, onSave,
     status: 'upcoming' as 'current' | 'upcoming',
     has_video_story: false,
     youtube_url: '',
-    printful_store_url: ''
+    printful_store_url: '',
+    showcase: false
   });
   const [loading, setLoading] = useState(false);
 
@@ -43,7 +44,8 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({ character, onSave,
         status: character.status,
         has_video_story: character.has_video_story,
         youtube_url: character.youtube_url || '',
-        printful_store_url: character.printful_store_url || ''
+        printful_store_url: character.printful_store_url || '',
+        showcase: character.showcase || false
       });
     }
   }, [character]);
@@ -157,6 +159,15 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({ character, onSave,
               onCheckedChange={(checked) => setFormData({ ...formData, has_video_story: checked })}
             />
             <Label htmlFor="has_video_story">Has Video Story</Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="showcase"
+              checked={formData.showcase}
+              onCheckedChange={(checked) => setFormData({ ...formData, showcase: checked })}
+            />
+            <Label htmlFor="showcase">Available for Showcase</Label>
           </div>
 
           {formData.has_video_story && (

@@ -28,6 +28,7 @@ export function PaintingForm({ painting, onSuccess, onCancel }: PaintingFormProp
   const [selectedTags, setSelectedTags] = useState<string[]>(painting?.tags || []);
   const [tagPrices, setTagPrices] = useState<Record<string, number>>(painting?.tag_prices || {});
   const [featured, setFeatured] = useState(painting?.featured || false);
+  const [showcase, setShowcase] = useState(painting?.showcase || false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Filter selected tags that need price inputs
@@ -93,6 +94,7 @@ export function PaintingForm({ painting, onSuccess, onCancel }: PaintingFormProp
         tags: selectedTags,
         tag_prices: tagPrices,
         featured,
+        showcase,
       };
 
       if (painting?.id) {
@@ -173,6 +175,15 @@ export function PaintingForm({ painting, onSuccess, onCancel }: PaintingFormProp
           onCheckedChange={setFeatured}
         />
         <Label htmlFor="featured">Featured on Homepage</Label>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="showcase"
+          checked={showcase}
+          onCheckedChange={setShowcase}
+        />
+        <Label htmlFor="showcase">Available for Showcase</Label>
       </div>
 
       <div className="space-y-2">

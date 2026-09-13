@@ -1,7 +1,7 @@
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './config';
 
-export type ShowcaseSourceType = 'book' | 'painting' | 'character';
+export type ShowcaseSourceType = 'book' | 'painting' | 'character' | 'mural';
 
 export interface ShowcaseRef {
   source_type: ShowcaseSourceType;

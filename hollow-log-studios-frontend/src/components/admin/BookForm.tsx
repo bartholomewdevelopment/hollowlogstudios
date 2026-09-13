@@ -27,6 +27,7 @@ const formSchema = z.object({
   website_cart_available: z.boolean().default(true),
   autograph_available: z.boolean().default(true),
   pre_order: z.boolean().default(false),
+  showcase: z.boolean().default(false),
   author: z.string().optional(),
   publisher: z.string().optional(),
   publication_year: z.string().optional(),
@@ -60,6 +61,7 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
       website_cart_available: book?.website_cart_available ?? true,
       autograph_available: book?.autograph_available ?? true,
       pre_order: book?.pre_order ?? false,
+      showcase: book?.showcase ?? false,
       author: book?.author || '',
       publisher: book?.publisher || '',
       publication_year: book?.publication_year || '',
@@ -89,6 +91,7 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
         website_cart_available: data.website_cart_available,
         autograph_available: data.autograph_available,
         pre_order: data.pre_order,
+        showcase: data.showcase,
         author: data.author || null,
         publisher: data.publisher || null,
         publication_year: data.publication_year || null,
@@ -238,6 +241,27 @@ export function BookForm({ book, onSuccess, onCancel }: BookFormProps) {
                 <FormLabel>Featured Book</FormLabel>
                 <p className="text-sm text-gray-500">
                   This book will be displayed prominently in the featured section
+                </p>
+              </div>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="showcase"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Available for Showcase</FormLabel>
+                <p className="text-sm text-gray-500">
+                  List this book in the Showcase tab so it can be added to the homepage carousel
                 </p>
               </div>
             </FormItem>

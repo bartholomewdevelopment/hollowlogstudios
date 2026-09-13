@@ -11,42 +11,50 @@ import { useNavigate } from 'react-router-dom';
 import { fetchPaintings } from '@/firebase/galleryService';
 import { fetchBooks } from '@/firebase/bookService';
 import { getAllCharacters } from '@/firebase/characterService';
+import { getMurals } from '@/firebase/muralService';
 
 // ─── Each carousel item carries its destination route ────────────────────────
 const MAX_SHOWCASE_ITEMS = 12;
 
 async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
-  // Books, characters and paintings only. Murals are strong work but they are
-  // not what she is pitching to literary agents, so they stay in the gallery.
-  const [paintings, books, characters] = await Promise.allSettled([
+  const [paintings, books, characters, murals] = await Promise.allSettled([
     fetchPaintings(),
     fetchBooks(),
     getAllCharacters(),
+    getMurals(),
   ]);
 
   // Deterministic order: published books, then original characters, then
-  // paintings. Randomising meant the site looked different on every visit,
-  // which is the opposite of what a portfolio wants.
-  const items: ShowcaseItem[] = [];
+  // paintings, then murals. Randomising meant the site looked different on
+  // every visit, which is the opposite of what a portfolio wants.
+  const items: (ShowcaseItem & { tagged: boolean })[] = [];
 
   if (books.status === 'fulfilled') {
     books.value.forEach(b => {
       if (b.image_url)
-        items.push({ url: b.image_url, href: `/book/${b.id}`, label: b.title, kind: 'Book', source_type: 'book', source_id: b.id });
+        items.push({ url: b.image_url, href: `/book/${b.id}`, label: b.title, kind: 'Book', source_type: 'book', source_id: b.id, tagged: !!b.showcase });
     });
   }
   if (characters.status === 'fulfilled') {
     characters.value.forEach(c => {
       if (c.image_url) {
         const href = c.character_type === 'cryptid' ? '/cryptids' : '/pebblewick';
-        items.push({ url: c.image_url, href, label: c.name, kind: 'Character', source_type: 'character', source_id: c.id });
+        items.push({ url: c.image_url, href, label: c.name, kind: 'Character', source_type: 'character', source_id: c.id, tagged: !!c.showcase });
       }
     });
   }
   if (paintings.status === 'fulfilled') {
     paintings.value.forEach(p => {
       if (p.image_url)
-        items.push({ url: p.image_url, href: '/gallery', label: p.title, kind: 'Painting', source_type: 'painting', source_id: p.id });
+        items.push({ url: p.image_url, href: '/gallery', label: p.title, kind: 'Painting', source_type: 'painting', source_id: p.id, tagged: !!p.showcase });
+    });
+  }
+  // Murals were left out before tagging existed — they are not what she
+  // pitches to literary agents. Now they only appear when tagged or chosen.
+  if (murals.status === 'fulfilled') {
+    murals.value.forEach(m => {
+      if (m.image_url)
+        items.push({ url: m.image_url, href: '/gallery', label: m.title, kind: 'Mural', source_type: 'mural', source_id: m.id, tagged: !!m.showcase });
     });
   }
 
@@ -61,8 +69,11 @@ async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
     if (curated.length > 0) return curated;
   }
 
-  // Otherwise pick automatically — a showcase, not an archive.
-  return items.slice(0, MAX_SHOWCASE_ITEMS);
+  // Otherwise pick automatically — a showcase, not an archive. Tagged work
+  // first; until anything is tagged, fall back to the old choice (no murals).
+  const tagged = items.filter(i => i.tagged);
+  const pool = tagged.length > 0 ? tagged : items.filter(i => i.source_type !== 'mural');
+  return pool.slice(0, MAX_SHOWCASE_ITEMS);
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────

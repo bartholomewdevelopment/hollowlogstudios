@@ -5,6 +5,7 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { createMural, updateMural } from '@/firebase/muralService';
 import { ImageUpload } from './ImageUpload';
@@ -17,6 +18,7 @@ const muralSchema = z.object({
   image_url: z.string().min(1, 'Image is required'),
   location: z.string().optional(),
   year: z.coerce.number().optional(),
+  showcase: z.boolean().default(false),
 });
 
 type MuralFormValues = z.infer<typeof muralSchema>;
@@ -38,6 +40,7 @@ export default function MuralForm({ mural, onSuccess }: MuralFormProps) {
       image_url: mural?.image_url || '',
       location: mural?.location || '',
       year: mural?.year || undefined,
+      showcase: mural?.showcase || false,
     },
   });
 
@@ -63,6 +66,7 @@ export default function MuralForm({ mural, onSuccess }: MuralFormProps) {
           image_url: '',
           location: '',
           year: undefined,
+          showcase: false,
         });
         toast({
           title: 'Success',
@@ -175,6 +179,24 @@ export default function MuralForm({ mural, onSuccess }: MuralFormProps) {
                 </div>
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="showcase"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Available for Showcase</FormLabel>
+                <p className="text-sm text-gray-500">
+                  List this mural in the Showcase tab so it can be added to the homepage carousel
+                </p>
+              </div>
             </FormItem>
           )}
         />

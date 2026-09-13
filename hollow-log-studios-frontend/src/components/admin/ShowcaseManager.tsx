@@ -11,6 +11,7 @@ import {
 import { fetchPaintings } from '@/firebase/galleryService';
 import { fetchBooks } from '@/firebase/bookService';
 import { getAllCharacters } from '@/firebase/characterService';
+import { getMurals } from '@/firebase/muralService';
 import { ArrowUp, ArrowDown, X, Plus, Loader2, RotateCcw } from 'lucide-react';
 
 interface Candidate {
@@ -19,9 +20,18 @@ interface Candidate {
   title: string;
   image_url: string;
   kind: string;
+  /** Ticked "Available for Showcase" on its own edit form. */
+  tagged: boolean;
 }
 
 const key = (r: { source_type: string; source_id: string }) => `${r.source_type}:${r.source_id}`;
+
+/** Mirrors the homepage's automatic choice in Hero.tsx. */
+const automaticPicks = (all: Candidate[]): ShowcaseRef[] => {
+  const tagged = all.filter(c => c.tagged);
+  const pool = tagged.length > 0 ? tagged : all.filter(c => c.source_type !== 'mural');
+  return pool.slice(0, 12).map(c => ({ source_type: c.source_type, source_id: c.source_id }));
+};
 
 export const ShowcaseManager: React.FC = () => {
   const { toast } = useToast();
@@ -33,10 +43,11 @@ export const ShowcaseManager: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      const [books, paintings, characters, selection] = await Promise.all([
+      const [books, paintings, characters, murals, selection] = await Promise.all([
         fetchBooks().catch(() => []),
         fetchPaintings().catch(() => []),
         getAllCharacters().catch(() => []),
+        getMurals().catch(() => []),
         getShowcaseSelection(),
       ]);
 
@@ -49,6 +60,7 @@ export const ShowcaseManager: React.FC = () => {
             title: b.title,
             image_url: b.image_url,
             kind: 'Book',
+            tagged: !!b.showcase,
           })),
         ...characters
           .filter(c => c.image_url)
@@ -56,8 +68,9 @@ export const ShowcaseManager: React.FC = () => {
             source_type: 'character' as const,
             source_id: c.id,
             title: c.name,
-            image_url: c.image_url,
+            image_url: c.image_url as string,
             kind: 'Character',
+            tagged: !!c.showcase,
           })),
         ...paintings
           .filter(p => p.image_url)
@@ -67,6 +80,17 @@ export const ShowcaseManager: React.FC = () => {
             title: p.title,
             image_url: p.image_url,
             kind: 'Painting',
+            tagged: !!p.showcase,
+          })),
+        ...murals
+          .filter(m => m.image_url)
+          .map(m => ({
+            source_type: 'mural' as const,
+            source_id: m.id,
+            title: m.title,
+            image_url: m.image_url,
+            kind: 'Mural',
+            tagged: !!m.showcase,
           })),
       ];
 
@@ -75,8 +99,7 @@ export const ShowcaseManager: React.FC = () => {
         setSelected(selection);
         setCurated(true);
       } else {
-        // Nothing curated yet — start from what the homepage shows today.
-        setSelected(all.slice(0, 12).map(c => ({ source_type: c.source_type, source_id: c.source_id })));
+        setSelected(automaticPicks(all));
       }
       setLoading(false);
     })();
@@ -91,7 +114,8 @@ export const ShowcaseManager: React.FC = () => {
   }, [candidates]);
 
   const selectedKeys = useMemo(() => new Set(selected.map(key)), [selected]);
-  const available = candidates.filter(c => !selectedKeys.has(key(c)));
+  // Only work tagged "Available for Showcase" on its edit form is offered here.
+  const available = candidates.filter(c => c.tagged && !selectedKeys.has(key(c)));
 
   const move = (index: number, delta: number) => {
     setSelected(prev => {
@@ -130,9 +154,7 @@ export const ShowcaseManager: React.FC = () => {
     try {
       await saveShowcaseSelection([]);
       setCurated(false);
-      setSelected(
-        candidates.slice(0, 12).map(c => ({ source_type: c.source_type, source_id: c.source_id }))
-      );
+      setSelected(automaticPicks(candidates));
       toast({ title: 'Back to automatic', description: 'The homepage will pick items itself.' });
     } catch {
       toast({ title: 'Error', description: 'Could not reset.', variant: 'destructive' });
@@ -232,7 +254,10 @@ export const ShowcaseManager: React.FC = () => {
           Available ({available.length})
         </h3>
         {available.length === 0 ? (
-          <p className="text-sm text-gray-400">Everything is already in the showcase.</p>
+          <p className="text-sm text-gray-400">
+            Nothing else is tagged. Tick "Available for Showcase" when editing a painting,
+            mural, book or character to list it here.
+          </p>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {available.map(c => (

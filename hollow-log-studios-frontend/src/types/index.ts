@@ -8,6 +8,8 @@ export interface Painting {
   tags: string[];
   featured: boolean;
   tag_prices?: Record<string, number>;
+  /** Offered in the admin Showcase tab's Available list. */
+  showcase?: boolean;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }
@@ -35,6 +37,8 @@ export interface Book {
   author?: string | null;
   /** e.g. "Illustrator", "Author & Illustrator". */
   role?: string | null;
+  /** Offered in the admin Showcase tab's Available list. */
+  showcase?: boolean;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }
@@ -72,6 +76,8 @@ export interface Mural {
   image_url: string;
   location: string | null;
   year: number | null;
+  /** Offered in the admin Showcase tab's Available list. */
+  showcase?: boolean;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }
@@ -88,6 +94,8 @@ export interface Character {
   has_video_story: boolean;
   youtube_url: string | null;
   printful_store_url: string | null;
+  /** Offered in the admin Showcase tab's Available list. */
+  showcase?: boolean;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }
