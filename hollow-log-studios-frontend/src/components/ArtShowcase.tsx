@@ -77,18 +77,41 @@ const ArtShowcase: React.FC<{ items: ShowcaseItem[] }> = ({ items }) => {
       {/* Stage — fixed height so nothing jumps as slides change */}
       <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/5 shadow-2xl backdrop-blur-sm">
         <div className="relative h-64 w-full sm:h-80 lg:h-[420px]">
-          {items.map((it, i) => (
-            <img
-              key={it.url}
-              src={it.url}
-              alt={i === current ? it.label : ''}
-              aria-hidden={i !== current}
-              loading={i === 0 ? 'eager' : 'lazy'}
-              className={`absolute inset-0 h-full w-full object-contain p-4 transition-opacity duration-700 ease-in-out sm:p-6 ${
-                i === current ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
-          ))}
+          {items.map((it, i) => {
+            // Position relative to the current slide, wrapping around the
+            // ends so the last item peeks in before the first.
+            let offset = i - current;
+            if (offset > items.length / 2) offset -= items.length;
+            if (offset < -items.length / 2) offset += items.length;
+            const isCurrent = offset === 0;
+            const isNeighbour = Math.abs(offset) === 1;
+            const clamped = Math.max(-2, Math.min(2, offset));
+
+            return (
+              <img
+                key={it.url}
+                src={it.url}
+                alt={isCurrent ? it.label : ''}
+                aria-hidden={!isCurrent}
+                loading={isCurrent || isNeighbour ? 'eager' : 'lazy'}
+                onClick={isNeighbour ? () => go(i) : undefined}
+                style={{
+                  // Neighbours sit either side, smaller and faded; the rest
+                  // wait just beyond them, invisible.
+                  transform: `translateX(calc(-50% + ${clamped * 78}%)) scale(${
+                    isCurrent ? 1 : isNeighbour ? 0.72 : 0.6
+                  })`,
+                  opacity: isCurrent ? 1 : isNeighbour ? 0.4 : 0,
+                  zIndex: isCurrent ? 20 : isNeighbour ? 10 : 0,
+                }}
+                className={`absolute left-1/2 top-0 h-full w-[68%] object-contain p-4 ease-in-out sm:w-[60%] sm:p-6 ${
+                  reducedMotion ? '' : 'transition-[transform,opacity] duration-700'
+                } ${isNeighbour ? 'cursor-pointer hover:!opacity-70' : ''} ${
+                  !isCurrent && !isNeighbour ? 'pointer-events-none' : ''
+                }`}
+              />
+            );
+          })}
 
           {items.length > 1 && (
             <>
@@ -96,7 +119,7 @@ const ArtShowcase: React.FC<{ items: ShowcaseItem[] }> = ({ items }) => {
                 type="button"
                 onClick={() => go(current - 1)}
                 aria-label="Previous work"
-                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white backdrop-blur transition hover:bg-black/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="absolute left-3 top-1/2 z-30 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white backdrop-blur transition hover:bg-black/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
@@ -104,7 +127,7 @@ const ArtShowcase: React.FC<{ items: ShowcaseItem[] }> = ({ items }) => {
                 type="button"
                 onClick={() => go(current + 1)}
                 aria-label="Next work"
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white backdrop-blur transition hover:bg-black/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="absolute right-3 top-1/2 z-30 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white backdrop-blur transition hover:bg-black/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
