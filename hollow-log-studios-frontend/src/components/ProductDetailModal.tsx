@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Painting } from '@/types';
 import { useCart } from '@/contexts/CartContext';
 import { ShoppingCart } from 'lucide-react';
+import { displayImage } from '@/lib/webImage';
 
 interface ProductDetailModalProps {
   isOpen: boolean;
@@ -65,7 +66,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
       id: painting.id,
       title: `${painting.title} (${variant === 'print' ? 'Print' : 'Original'})`,
       price: itemPrice,
-      image_url: painting.image_url,
+      image_url: displayImage(painting),
       type: 'painting',
       variant
     });
@@ -73,7 +74,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[700px]">
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-5xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">{painting.title}</DialogTitle>
           <div className="flex flex-wrap gap-1 mt-2">
@@ -85,16 +86,17 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           </div>
         </DialogHeader>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="overflow-hidden rounded-md">
-            <img 
-              src={painting.image_url} 
-              alt={painting.title} 
-              className="w-full h-auto object-cover"
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
+          {/* The painting gets most of the room — this is where it is seen properly */}
+          <div className="flex items-center justify-center overflow-hidden rounded-md bg-stone-50 md:col-span-3">
+            <img
+              src={displayImage(painting)}
+              alt={painting.title}
+              className="max-h-[70vh] w-full object-contain"
             />
           </div>
-          
-          <div className="space-y-4">
+
+          <div className="space-y-4 md:col-span-2">
             {painting.description && (
               <DialogDescription className="text-base">
                 {painting.description}

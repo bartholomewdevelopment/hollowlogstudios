@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Youtube, ShoppingBag, Sparkles } from 'lucide-react';
 import { Character } from '@/types';
+import { displayImage } from '@/lib/webImage';
 
 interface CharacterModalProps {
   character: Character;
@@ -49,7 +50,7 @@ export const CharacterModal: React.FC<CharacterModalProps> = ({ character, isOpe
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-500" />
                 <img
-                  src={character.image_url}
+                  src={displayImage(character)}
                   alt={character.name}
                   className="relative max-h-[50vh] lg:max-h-[70vh] w-auto object-contain rounded-xl shadow-xl"
                 />

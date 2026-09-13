@@ -45,7 +45,11 @@ const controlClass =
  * stays out of the way. Title and controls sit above, the piece is shown
  * large with its neighbours faded either side, and the caption sits below.
  */
-const ArtShowcase: React.FC<{ items: ShowcaseItem[] }> = ({ items }) => {
+const ArtShowcase: React.FC<{
+  items: ShowcaseItem[];
+  /** Opens the piece in place; without it, "View" goes to item.href. */
+  onView?: (item: ShowcaseItem) => void;
+}> = ({ items, onView }) => {
   const navigate = useNavigate();
   const reducedMotion = usePrefersReducedMotion();
   const [current, setCurrent] = useState(0);
@@ -196,7 +200,7 @@ const ArtShowcase: React.FC<{ items: ShowcaseItem[] }> = ({ items }) => {
         <h3 className="mt-2 text-xl font-semibold leading-snug text-stone-900 [text-wrap:balance] md:text-2xl">{item.label}</h3>
         <button
           type="button"
-          onClick={() => navigate(item.href)}
+          onClick={() => (onView ? onView(item) : navigate(item.href))}
           className="group mt-3 inline-flex items-center gap-1.5 rounded text-sm font-semibold text-[#238830] underline-offset-4 transition hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#238830] focus-visible:ring-offset-2"
         >
           View {item.kind.toLowerCase()}

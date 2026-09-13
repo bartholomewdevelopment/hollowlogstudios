@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Mural } from '@/types';
+import { displayImage } from '@/lib/webImage';
 
 interface MuralDetailModalProps {
   isOpen: boolean;
@@ -25,7 +26,7 @@ const MuralDetailModal: React.FC<MuralDetailModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[700px]">
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-5xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">{mural.title}</DialogTitle>
           <DialogDescription>
@@ -37,10 +38,10 @@ const MuralDetailModal: React.FC<MuralDetailModalProps> = ({
         
         <div className="space-y-4">
           <div className="overflow-hidden rounded-md">
-            <img 
-              src={mural.image_url} 
-              alt={mural.title} 
-              className="w-full max-h-[500px] object-contain"
+            <img
+              src={displayImage(mural)}
+              alt={mural.title}
+              className="w-full max-h-[70vh] object-contain"
             />
           </div>
           

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Book } from '@/types';
+import { Book, Character, Mural, Painting } from '@/types';
 import { Eye, ShoppingCart, Brush, BookOpen } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import ArtShowcase, { ShowcaseItem } from '@/components/ArtShowcase';
@@ -13,11 +13,21 @@ import { fetchBooks } from '@/firebase/bookService';
 import { getAllCharacters } from '@/firebase/characterService';
 import { getMurals } from '@/firebase/muralService';
 import { displayImage, thumbImage } from '@/lib/webImage';
+import ProductDetailModal from '@/components/ProductDetailModal';
+import MuralDetailModal from '@/components/MuralDetailModal';
+import { CharacterModal } from '@/components/CharacterModal';
 
 // ─── Each carousel item carries its destination route ────────────────────────
 const MAX_SHOWCASE_ITEMS = 12;
 
-async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
+/** Full records behind the showcase items, so a piece can open in its dialog. */
+interface ArtDocs {
+  painting: Record<string, Painting>;
+  mural: Record<string, Mural>;
+  character: Record<string, Character>;
+}
+
+async function fetchAllArtImages(): Promise<{ items: ShowcaseItem[]; docs: ArtDocs }> {
   const [paintings, books, characters, murals] = await Promise.allSettled([
     fetchPaintings(),
     fetchBooks(),
@@ -59,6 +69,12 @@ async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
     });
   }
 
+  const byId = <T extends { id: string }>(result: PromiseSettledResult<T[]>) =>
+    Object.fromEntries(
+      (result.status === 'fulfilled' ? result.value : []).map(d => [d.id, d])
+    ) as Record<string, T>;
+  const docs: ArtDocs = { painting: byId(paintings), mural: byId(murals), character: byId(characters) };
+
   // A curated selection wins; its order is the order shown. Anything that has
   // since been deleted simply drops out.
   const selection = await getShowcaseSelection();
@@ -67,14 +83,14 @@ async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
     const curated = selection
       .map(ref => byKey.get(`${ref.source_type}:${ref.source_id}`))
       .filter((i): i is (typeof items)[number] => Boolean(i));
-    if (curated.length > 0) return curated;
+    if (curated.length > 0) return { items: curated, docs };
   }
 
   // Otherwise pick automatically — a showcase, not an archive. Tagged work
   // first; until anything is tagged, fall back to the old choice (no murals).
   const tagged = items.filter(i => i.tagged);
   const pool = tagged.length > 0 ? tagged : items.filter(i => i.source_type !== 'mural');
-  return pool.slice(0, MAX_SHOWCASE_ITEMS);
+  return { items: pool.slice(0, MAX_SHOWCASE_ITEMS), docs };
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
@@ -87,12 +103,41 @@ const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const [artItems, setArtItems] = useState<ShowcaseItem[]>([]);
+  const [artDocs, setArtDocs] = useState<ArtDocs>({ painting: {}, mural: {}, character: {} });
+  // The piece opened from the showcase, kept briefly after closing so the
+  // dialog can animate out
+  const [viewing, setViewing] = useState<ShowcaseItem | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
 
   useEffect(() => {
     fetchAllArtImages()
-      .then(setArtItems)
+      .then(({ items, docs }) => {
+        setArtItems(items);
+        setArtDocs(docs);
+      })
       .catch(err => console.error('Failed to load art images:', err));
   }, []);
+
+  // Paintings, murals and characters open in place; books have their own page.
+  const handleViewArt = (item: ShowcaseItem) => {
+    const type = item.source_type as keyof ArtDocs | 'book' | undefined;
+    if (type && type !== 'book' && item.source_id && artDocs[type][item.source_id]) {
+      setViewing(item);
+      setViewOpen(true);
+    } else {
+      navigate(item.href);
+    }
+  };
+
+  const closeViewing = () => {
+    setViewOpen(false);
+    setTimeout(() => setViewing(null), 300);
+  };
+
+  const viewedId = viewing?.source_id ?? '';
+  const viewedPainting = viewing?.source_type === 'painting' ? artDocs.painting[viewedId] ?? null : null;
+  const viewedMural = viewing?.source_type === 'mural' ? artDocs.mural[viewedId] ?? null : null;
+  const viewedCharacter = viewing?.source_type === 'character' ? artDocs.character[viewedId] ?? null : null;
 
   const handleAddToCart = () => {
     if (!featuredBook || featuredBook.price === null) return;
@@ -233,9 +278,15 @@ const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
     {artItems.length > 0 && (
       <section className="relative border-b border-stone-200/70 bg-white py-14 md:py-20">
         <div className="container mx-auto px-4">
-          <ArtShowcase items={artItems} />
+          <ArtShowcase items={artItems} onView={handleViewArt} />
         </div>
       </section>
+    )}
+
+    <ProductDetailModal isOpen={viewOpen && !!viewedPainting} onClose={closeViewing} painting={viewedPainting} />
+    <MuralDetailModal isOpen={viewOpen && !!viewedMural} onClose={closeViewing} mural={viewedMural} />
+    {viewedCharacter && (
+      <CharacterModal character={viewedCharacter} isOpen={viewOpen} onClose={closeViewing} />
     )}
     </>
   );
