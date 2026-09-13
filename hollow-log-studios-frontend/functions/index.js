@@ -2,6 +2,8 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const Stripe = require('stripe');
 const cors = require('cors')({ origin: true });
+const sharp = require('sharp');
+const crypto = require('crypto');
 
 admin.initializeApp();
 
@@ -204,4 +206,73 @@ exports.getCheckoutSession = functions.https.onRequest((req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
+});
+
+/**
+ * Web-sized copies of artwork images.
+ *
+ * Originals are often huge scans (one is 13,887 x 10,034 px, 107 MB), far too
+ * heavy for a web page. Whenever a painting, book, character or mural is saved
+ * with an image, this writes a 1600px display copy and a 320px thumbnail under
+ * web/, cached for a year, and records their URLs on the document. The
+ * original file is never changed. src/lib/webImage.ts reads the fields.
+ */
+const WEB_IMAGE_COLLECTIONS = ['paintings', 'books', 'characters', 'murals'];
+const WEB_IMAGE_SIZES = { image_web_url: 1600, image_thumb_url: 320 };
+
+/** Storage path from a Firebase download URL, or null if it lives elsewhere. */
+function storagePathFromUrl(url, bucketName) {
+  const match = /^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/([^/]+)\/o\/([^?]+)/.exec(url || '');
+  if (!match || match[1] !== bucketName) return null;
+  return decodeURIComponent(match[2]);
+}
+
+async function writeWebImages(snap) {
+  const data = snap.data();
+  const source = data && data.image_url;
+  // Already done for this image. This is also what stops the update below
+  // from triggering another run.
+  if (!source || data.image_web_source === source) return;
+
+  const bucket = admin.storage().bucket();
+  const path = storagePathFromUrl(source, bucket.name);
+  if (!path) {
+    console.log(`Skipping ${snap.ref.path}: image is not in this project's storage`);
+    return;
+  }
+
+  const [original] = await bucket.file(path).download();
+  const base = `web/${path.replace(/\.[^./]+$/, '')}`;
+  const update = { image_web_source: source };
+
+  for (const [field, size] of Object.entries(WEB_IMAGE_SIZES)) {
+    const resized = await sharp(original, { limitInputPixels: false })
+      .rotate() // honour camera orientation
+      .resize({ width: size, height: size, fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: 82, mozjpeg: true })
+      .toBuffer();
+
+    const dest = `${base}-${size}.jpg`;
+    const token = crypto.randomUUID();
+    await bucket.file(dest).save(resized, {
+      resumable: false,
+      metadata: {
+        contentType: 'image/jpeg',
+        cacheControl: 'public, max-age=31536000, immutable',
+        metadata: { firebaseStorageDownloadTokens: token },
+      },
+    });
+    update[field] =
+      `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(dest)}?alt=media&token=${token}`;
+  }
+
+  await snap.ref.update(update);
+  console.log(`Web images written for ${snap.ref.path}`);
+}
+
+WEB_IMAGE_COLLECTIONS.forEach(collection => {
+  exports[`webImages_${collection}`] = functions
+    .runWith({ memory: '2GB', timeoutSeconds: 300 })
+    .firestore.document(`${collection}/{docId}`)
+    .onWrite(change => (change.after.exists ? writeWebImages(change.after) : null));
 });

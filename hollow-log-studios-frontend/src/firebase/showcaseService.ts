@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './config';
 
 export type ShowcaseSourceType = 'book' | 'painting' | 'character' | 'mural';
@@ -42,4 +42,20 @@ export async function saveShowcaseSelection(items: ShowcaseRef[]): Promise<void>
     console.error('Error saving showcase selection:', error);
     throw error;
   }
+}
+
+export interface WebImageTarget {
+  collection: string;
+  id: string;
+}
+
+/**
+ * Asks the webImages Cloud Function (functions/index.js) to make web-sized
+ * copies. Clearing image_web_source marks the copies as out of date, and the
+ * write itself is what triggers the function.
+ */
+export async function requestWebImages(targets: WebImageTarget[]): Promise<void> {
+  await Promise.all(
+    targets.map(t => updateDoc(doc(db, t.collection, t.id), { image_web_source: '' }))
+  );
 }

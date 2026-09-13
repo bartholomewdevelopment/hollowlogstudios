@@ -4,15 +4,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import {
   getShowcaseSelection,
+  requestWebImages,
   saveShowcaseSelection,
   ShowcaseRef,
   ShowcaseSourceType,
+  WebImageTarget,
 } from '@/firebase/showcaseService';
 import { fetchPaintings } from '@/firebase/galleryService';
 import { fetchBooks } from '@/firebase/bookService';
 import { getAllCharacters } from '@/firebase/characterService';
 import { getMurals } from '@/firebase/muralService';
-import { ArrowUp, ArrowDown, X, Plus, Loader2, RotateCcw } from 'lucide-react';
+import { thumbImage } from '@/lib/webImage';
+import { ArrowUp, ArrowDown, X, Plus, Loader2, RotateCcw, Sparkles } from 'lucide-react';
 
 interface Candidate {
   source_type: ShowcaseSourceType;
@@ -40,6 +43,10 @@ export const ShowcaseManager: React.FC = () => {
   const [curated, setCurated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  // Pieces whose web-sized copies are missing or out of date
+  const [staleImages, setStaleImages] = useState<WebImageTarget[]>([]);
+  const [totalImages, setTotalImages] = useState(0);
+  const [preparing, setPreparing] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -58,7 +65,7 @@ export const ShowcaseManager: React.FC = () => {
             source_type: 'book' as const,
             source_id: b.id,
             title: b.title,
-            image_url: b.image_url,
+            image_url: thumbImage(b),
             kind: 'Book',
             tagged: !!b.showcase,
           })),
@@ -68,7 +75,7 @@ export const ShowcaseManager: React.FC = () => {
             source_type: 'character' as const,
             source_id: c.id,
             title: c.name,
-            image_url: c.image_url as string,
+            image_url: thumbImage(c),
             kind: 'Character',
             tagged: !!c.showcase,
           })),
@@ -78,7 +85,7 @@ export const ShowcaseManager: React.FC = () => {
             source_type: 'painting' as const,
             source_id: p.id,
             title: p.title,
-            image_url: p.image_url,
+            image_url: thumbImage(p),
             kind: 'Painting',
             tagged: !!p.showcase,
           })),
@@ -88,13 +95,32 @@ export const ShowcaseManager: React.FC = () => {
             source_type: 'mural' as const,
             source_id: m.id,
             title: m.title,
-            image_url: m.image_url,
+            image_url: thumbImage(m),
             kind: 'Mural',
             tagged: !!m.showcase,
           })),
       ];
 
       setCandidates(all);
+
+      const stale: WebImageTarget[] = [];
+      let total = 0;
+      const check = (
+        collection: string,
+        docs: { id: string; image_url?: string | null; image_web_source?: string }[]
+      ) =>
+        docs.forEach(d => {
+          if (!d.image_url) return;
+          total += 1;
+          if (d.image_web_source !== d.image_url) stale.push({ collection, id: d.id });
+        });
+      check('books', books);
+      check('characters', characters);
+      check('paintings', paintings);
+      check('murals', murals);
+      setTotalImages(total);
+      setStaleImages(stale);
+
       if (selection) {
         setSelected(selection);
         setCurated(true);
@@ -163,10 +189,54 @@ export const ShowcaseManager: React.FC = () => {
     }
   };
 
+  const handlePrepareImages = async () => {
+    setPreparing(true);
+    try {
+      await requestWebImages(staleImages);
+      toast({
+        title: 'Preparing web images',
+        description: `${staleImages.length} image${staleImages.length === 1 ? '' : 's'} sent for resizing. Large scans can take a minute each.`,
+      });
+      setStaleImages([]);
+    } catch {
+      toast({ title: 'Error', description: 'Could not start preparing images.', variant: 'destructive' });
+    } finally {
+      setPreparing(false);
+    }
+  };
+
   if (loading) return <div>Loading showcase...</div>;
 
   return (
     <div className="space-y-8">
+      {staleImages.length > 0 && (
+        <Card className="border-amber-200 bg-amber-50">
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
+            <div>
+              <p className="font-medium text-amber-900">
+                {staleImages.length} of {totalImages} images need web-sized copies
+              </p>
+              <p className="text-sm text-amber-800">
+                Until they have them, the homepage loads the full-size originals, which can be very slow.
+              </p>
+            </div>
+            <Button
+              onClick={handlePrepareImages}
+              disabled={preparing}
+              variant="outline"
+              className="border-amber-300 bg-white"
+            >
+              {preparing ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="mr-2 h-4 w-4" />
+              )}
+              Prepare web images
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl font-bold">Homepage Showcase</h2>

@@ -12,6 +12,7 @@ import { fetchPaintings } from '@/firebase/galleryService';
 import { fetchBooks } from '@/firebase/bookService';
 import { getAllCharacters } from '@/firebase/characterService';
 import { getMurals } from '@/firebase/muralService';
+import { displayImage, thumbImage } from '@/lib/webImage';
 
 // ─── Each carousel item carries its destination route ────────────────────────
 const MAX_SHOWCASE_ITEMS = 12;
@@ -32,21 +33,21 @@ async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
   if (books.status === 'fulfilled') {
     books.value.forEach(b => {
       if (b.image_url)
-        items.push({ url: b.image_url, href: `/book/${b.id}`, label: b.title, kind: 'Book', source_type: 'book', source_id: b.id, tagged: !!b.showcase });
+        items.push({ url: displayImage(b), thumb: thumbImage(b), href: `/book/${b.id}`, label: b.title, kind: 'Book', source_type: 'book', source_id: b.id, tagged: !!b.showcase });
     });
   }
   if (characters.status === 'fulfilled') {
     characters.value.forEach(c => {
       if (c.image_url) {
         const href = c.character_type === 'cryptid' ? '/cryptids' : '/pebblewick';
-        items.push({ url: c.image_url, href, label: c.name, kind: 'Character', source_type: 'character', source_id: c.id, tagged: !!c.showcase });
+        items.push({ url: displayImage(c), thumb: thumbImage(c), href, label: c.name, kind: 'Character', source_type: 'character', source_id: c.id, tagged: !!c.showcase });
       }
     });
   }
   if (paintings.status === 'fulfilled') {
     paintings.value.forEach(p => {
       if (p.image_url)
-        items.push({ url: p.image_url, href: '/gallery', label: p.title, kind: 'Painting', source_type: 'painting', source_id: p.id, tagged: !!p.showcase });
+        items.push({ url: displayImage(p), thumb: thumbImage(p), href: '/gallery', label: p.title, kind: 'Painting', source_type: 'painting', source_id: p.id, tagged: !!p.showcase });
     });
   }
   // Murals were left out before tagging existed — they are not what she
@@ -54,7 +55,7 @@ async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
   if (murals.status === 'fulfilled') {
     murals.value.forEach(m => {
       if (m.image_url)
-        items.push({ url: m.image_url, href: '/gallery', label: m.title, kind: 'Mural', source_type: 'mural', source_id: m.id, tagged: !!m.showcase });
+        items.push({ url: displayImage(m), thumb: thumbImage(m), href: '/gallery', label: m.title, kind: 'Mural', source_type: 'mural', source_id: m.id, tagged: !!m.showcase });
     });
   }
 
@@ -65,7 +66,7 @@ async function fetchAllArtImages(): Promise<ShowcaseItem[]> {
     const byKey = new Map(items.map(i => [`${i.source_type}:${i.source_id}`, i]));
     const curated = selection
       .map(ref => byKey.get(`${ref.source_type}:${ref.source_id}`))
-      .filter((i): i is ShowcaseItem => Boolean(i));
+      .filter((i): i is (typeof items)[number] => Boolean(i));
     if (curated.length > 0) return curated;
   }
 
@@ -108,6 +109,7 @@ const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
   };
 
   return (
+    <>
     <section
       id="main-content"
       className="fairy-lattice-light relative bg-gradient-to-br from-green-900 via-[#238830] to-green-700 overflow-hidden"
@@ -223,15 +225,19 @@ const Hero: React.FC<HeroProps> = ({ featuredBook, onViewBookDetails }) => {
 
         </div>
 
-        {/* ── Row 2: Selected work ── */}
-        {artItems.length > 0 && (
-          <div className="mt-8">
-            <ArtShowcase items={artItems} />
-          </div>
-        )}
-
       </div>
     </section>
+
+    {/* ── Selected work — its own quiet white section, so the artwork is
+        framed by space instead of competing with the green ── */}
+    {artItems.length > 0 && (
+      <section className="relative border-b border-stone-200/70 bg-white py-14 md:py-20">
+        <div className="container mx-auto px-4">
+          <ArtShowcase items={artItems} />
+        </div>
+      </section>
+    )}
+    </>
   );
 };
 

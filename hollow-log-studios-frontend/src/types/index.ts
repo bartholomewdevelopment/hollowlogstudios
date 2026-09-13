@@ -10,6 +10,10 @@ export interface Painting {
   tag_prices?: Record<string, number>;
   /** Offered in the admin Showcase tab's Available list. */
   showcase?: boolean;
+  /** Web-sized copies of image_url; see src/lib/webImage.ts. */
+  image_web_url?: string;
+  image_thumb_url?: string;
+  image_web_source?: string;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }
@@ -39,6 +43,10 @@ export interface Book {
   role?: string | null;
   /** Offered in the admin Showcase tab's Available list. */
   showcase?: boolean;
+  /** Web-sized copies of image_url; see src/lib/webImage.ts. */
+  image_web_url?: string;
+  image_thumb_url?: string;
+  image_web_source?: string;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }
@@ -78,6 +86,10 @@ export interface Mural {
   year: number | null;
   /** Offered in the admin Showcase tab's Available list. */
   showcase?: boolean;
+  /** Web-sized copies of image_url; see src/lib/webImage.ts. */
+  image_web_url?: string;
+  image_thumb_url?: string;
+  image_web_source?: string;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }
@@ -96,6 +108,10 @@ export interface Character {
   printful_store_url: string | null;
   /** Offered in the admin Showcase tab's Available list. */
   showcase?: boolean;
+  /** Web-sized copies of image_url; see src/lib/webImage.ts. */
+  image_web_url?: string;
+  image_thumb_url?: string;
+  image_web_source?: string;
   created_at: Timestamp | string;
   updated_at: Timestamp | string;
 }
