@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { uploadFile } from '@/lib/uploadHelpers';
+import { HEIC_ACCEPT } from '@/lib/heic';
 import { useToast } from '@/hooks/use-toast';
 
 interface ImageUploadProps {
@@ -95,7 +96,7 @@ export function ImageUpload({
       <div className="flex items-center gap-4">
         <Input
           type="file"
-          accept="image/*"
+          accept={`image/*,${HEIC_ACCEPT}`}
           onChange={handleFileChange}
           disabled={isUploading}
           className="flex-1"

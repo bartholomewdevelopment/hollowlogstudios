@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { StudioEvent, SocialLink } from '@/types';
 import { createEvent, updateEvent } from '@/firebase/eventService';
 import { uploadFile } from '@/lib/uploadHelpers';
+import { HEIC_ACCEPT } from '@/lib/heic';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Trash2, X, Upload, Loader2 } from 'lucide-react';
 
@@ -63,7 +64,7 @@ const MultiImageSection: React.FC<{
       <label className={`flex items-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#238830] transition-colors text-sm text-gray-500 hover:text-[#238830] w-fit ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
         {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
         {uploading ? 'Uploading...' : 'Add Images'}
-        <input type="file" accept="image/*" multiple className="hidden" onChange={handleFiles} disabled={uploading} />
+        <input type="file" accept={`image/*,${HEIC_ACCEPT}`} multiple className="hidden" onChange={handleFiles} disabled={uploading} />
       </label>
     </div>
   );

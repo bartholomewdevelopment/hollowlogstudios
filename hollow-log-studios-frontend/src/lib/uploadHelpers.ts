@@ -1,6 +1,7 @@
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage, auth } from '@/firebase/config';
 import { v4 as uuidv4 } from 'uuid';
+import { convertHeicToJpeg } from '@/lib/heic';
 
 /**
  * Uploads a file to Firebase Storage
@@ -8,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
  * @param bucket The storage folder/bucket name
  * @returns The public URL of the uploaded file
  */
-export async function uploadFile(file: File, bucket: string = 'paintings'): Promise<string> {
+export async function uploadFile(original: File, bucket: string = 'paintings'): Promise<string> {
   try {
     // First, ensure user is authenticated
     const user = auth.currentUser;
@@ -16,6 +17,9 @@ export async function uploadFile(file: File, bucket: string = 'paintings'): Prom
     if (!user) {
       throw new Error('You must be logged in to upload files');
     }
+
+    // iPhone HEIC photos are stored as JPEG so every browser can show them
+    const file = await convertHeicToJpeg(original);
 
     // Create a unique file name
     const fileExt = file.name.split('.').pop();
@@ -30,7 +34,7 @@ export async function uploadFile(file: File, bucket: string = 'paintings'): Prom
       contentType: file.type,
       customMetadata: {
         uploadedBy: user.uid,
-        originalName: file.name
+        originalName: original.name
       }
     });
 
